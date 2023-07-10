@@ -11,7 +11,8 @@
     box-sizing: border-box;
   }
 
-  .address-field-option label.el-checkbox {
+  .address-field-option label.el-checkbox,
+  .dates-field-option label.el-checkbox {
     display: inline-block;
   }
   &-main{
@@ -258,7 +259,8 @@ div.mce-inline-toolbar-grp.mce-arrow-up,
   }
 }
 
-.address-field-option {
+.address-field-option,
+.dates-field-option {
   .el-checkbox + .el-checkbox {
     margin-left: 0;
   }
@@ -604,7 +606,8 @@ mark {
   }
 }
 
-.address-field-option {
+.address-field-option,
+.dates-field-option {
   .el-form-item {
     margin-bottom: 15px;
   }
@@ -667,7 +670,7 @@ mark {
   margin: 7px 0;
 }
 
-.address-field-wrapper {
+.address-field-wrapper, .dates-field-wrapper{
   margin-top: 10px;
 }
 .chained-Select-template .header {
@@ -942,7 +945,8 @@ mark {
   }
 }
 
-.dragable-address-fields{
+.dragable-address-fields,
+.dragable-date-fields{
   div.vddl-nodrag{
     align-items: flex-start;
   }

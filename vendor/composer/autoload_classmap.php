@@ -135,6 +135,7 @@ return array(
     'FluentForm\\App\\Services\\FormBuilder\\Components\\SectionBreak' => $baseDir . '/app/Services/FormBuilder/Components/SectionBreak.php',
     'FluentForm\\App\\Services\\FormBuilder\\Components\\Select' => $baseDir . '/app/Services/FormBuilder/Components/Select.php',
     'FluentForm\\App\\Services\\FormBuilder\\Components\\SelectCountry' => $baseDir . '/app/Services/FormBuilder/Components/SelectCountry.php',
+    'FluentForm\\App\\Services\\FormBuilder\\Components\\SelectDate' => $baseDir . '/app/Services/FormBuilder/Components/SelectDate.php',
     'FluentForm\\App\\Services\\FormBuilder\\Components\\SubmitButton' => $baseDir . '/app/Services/FormBuilder/Components/SubmitButton.php',
     'FluentForm\\App\\Services\\FormBuilder\\Components\\TabularGrid' => $baseDir . '/app/Services/FormBuilder/Components/TabularGrid.php',
     'FluentForm\\App\\Services\\FormBuilder\\Components\\TermsAndConditions' => $baseDir . '/app/Services/FormBuilder/Components/TermsAndConditions.php',

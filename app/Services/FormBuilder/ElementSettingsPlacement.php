@@ -242,15 +242,12 @@ return [
     ],
     'input_date' => [
         'general' => [
-            'label',
-            'label_placement',
             'admin_field_label',
-            'placeholder',
-            'date_format',
-            'validation_rules',
+            'date_type',
+            'date_fields'
         ],
         'advanced' => [
-            'value',
+            'date_default_value',
             'container_class',
             'class',
             'help_message',

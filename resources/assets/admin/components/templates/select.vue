@@ -2,7 +2,7 @@
     <withLabel :item="item">
         <div class="ff_with_arrow">
             <select class="select el-input__inner">
-                <option>{{defaultVal || item.settings.placeholder}}</option>
+                <option>{{defaultVal || item.settings.placeholder || item.attributes.placeholder}}</option>
             </select>
         </div>
     </withLabel>
@@ -17,9 +17,10 @@ export default {
     props: ['item'],
     computed :{
         defaultVal() {
-            let option = find(this.item.settings.advanced_options, { value: this.item.attributes.value });
+            let value = this.item.attributes.value;
+            let option = find(this.item.settings.advanced_options, { value: value });
 
-            return option ? option.label : null;
+            return option ? option.label : ( value ? value : null);
         }
     },
     components: {

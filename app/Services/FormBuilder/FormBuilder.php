@@ -374,7 +374,7 @@ class FormBuilder
         } elseif (isset($item['fields'])) {
             $rootName = $item['attributes']['name'];
             foreach ($item['fields'] as $key => $innerItem) {
-                if ('address' == $item['element'] || 'input_name' == $item['element']) {
+                if ('address' == $item['element'] || 'input_name' == $item['element'] || 'input_date' == $item['element']) {
                     $itemName = $innerItem['attributes']['name'];
                     $innerItem['attributes']['name'] = $rootName . '[' . $itemName . ']';
                 } else {

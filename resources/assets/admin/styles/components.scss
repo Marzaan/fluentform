@@ -418,7 +418,8 @@
   overflow: scroll;
 }
 
-.address-field-option {
+.address-field-option,
+.dates-field-option{
   margin-bottom: 10px;
   padding-bottom: 10px;
   width: 100%;
@@ -466,7 +467,8 @@
   margin-top: 5px;
 }
 
-.vddl-handle.handle + .address-field-option {
+.vddl-handle.handle + .address-field-option,
+.vddl-handle.handle + .dates-field-option {
   margin-left: 10px;
 }
 

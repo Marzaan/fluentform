@@ -1,6 +1,6 @@
 <template>
     <el-form-item :class="{ 'is-required' : required, ['ff-el-form-'+item.settings.label_placement]: item.settings.label_placement }">
-        <elLabel slot="label" :label="item.settings.label"></elLabel>
+        <elLabel v-if="item.settings.label" slot="label" :label="item.settings.label"></elLabel>
         <slot></slot>
     </el-form-item>
 </template>

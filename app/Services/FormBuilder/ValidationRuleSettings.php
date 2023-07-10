@@ -256,7 +256,7 @@ $validation_rule_settings = [
                 'value' => 'gif',
             ],
         ],
-    ],
+    ]
 ];
 
 $validation_rule_settings = apply_filters_deprecated(

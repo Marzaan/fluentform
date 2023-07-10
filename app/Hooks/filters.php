@@ -70,6 +70,23 @@ add_action('fluentform/before_form_validation',function (){
     }
 });
 
+$app->addFilter('fluentform/before_render_item', function($item) {
+    if ('input_date' === $item['element']) {
+        if (isset($item['settings']['date_type'])) {
+            if ('single' === $item['settings']['date_type']) {
+                $fieldValidation = \FluentForm\Framework\Helpers\ArrayHelper::get($item, 'single_field.settings.validation_rules');
+                $item['settings']['validation_rules'] = $fieldValidation;
+            } elseif ('multiple' === $item['settings']['date_type']) {
+                $item['fields'] = $item['multi_field']['fields'];
+            }
+        } else {
+            $item['single_field']['attributes'] = $item['attributes'];
+            $item['single_field']['settings'] = $item['settings'];
+        }
+    }
+    return $item;
+}, 10, 1);
+
 /*
  * Push captcha in all forms when enabled from global settings
  */
@@ -122,6 +139,7 @@ $app->addFilter('fluentform/rendering_form', function ($form) {
 
     return $form;
 }, 10, 1);
+
 
 $elements = [
     'select',
@@ -217,6 +235,39 @@ $app->addFilter('fluentform/response_render_input_password', function ($value, $
     }
 
     return $value;
+}, 10, 3);
+
+$app->addFilter('fluentform/insert_response_data', function ($formData, $formId, $inputConfigs) {
+    foreach ($inputConfigs as $field) {
+        if ('input_date' === $field['element']) {
+            $dateType = \FluentForm\Framework\Helpers\ArrayHelper::get($field, 'raw.settings.date_type');
+
+            if ('multiple' === $dateType) {
+                $fieldName  = \FluentForm\Framework\Helpers\ArrayHelper::get($field, 'raw.attributes.name');
+                $dateFormat = \FluentForm\Framework\Helpers\ArrayHelper::get($field, 'raw.multi_field.settings.date_format');
+                $customFormat = \FluentForm\Framework\Helpers\ArrayHelper::get($field, 'raw.multi_field.settings.custom_format');
+                if ('custom' === $dateFormat) {
+                    $dateFormat = $customFormat;
+                }
+                $dateValue  = $formData[$fieldName];
+                
+                if (is_array($dateValue) || is_object($dateValue)) {
+                    // Convert the array of values to a string
+                    $dateString = fluentImplodeRecursive(' ', array_filter(array_values((array) $dateValue)));
+                    $dateFormat = str_replace('K', 'A', $dateFormat);
+                    
+                    // Replace slashes and colon to pass the format to the function
+                    $convertedFormat = str_replace(['/', '.', '-', ':'], [' ', ' ', ' ', ' '], $dateFormat);
+        
+                    // Convert the string to a date by the given format
+                    $datetime = date_create_from_format($convertedFormat, $dateString);
+                    $formData[$fieldName] = $datetime ? date_format($datetime, $dateFormat) : $dateString;
+                }
+            }
+        }
+    }
+
+    return $formData;
 }, 10, 3);
 
 $app->addFilter('fluentform/filter_insert_data', function ($data) {

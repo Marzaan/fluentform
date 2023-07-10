@@ -390,6 +390,8 @@ trait ValidatesAttributes
      */
     protected function validatePresent($attribute, $value)
     {
+        $attribute = str_replace(['[', ']'], ['.', ''], $attribute);
+        
         return Arr::has($this->data, $attribute);
     }
 

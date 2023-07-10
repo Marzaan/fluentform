@@ -163,6 +163,7 @@ class ComposerStaticInitb99e07d253bf4705bf50ef1db90791ef
         'FluentForm\\App\\Services\\FormBuilder\\Components\\SectionBreak' => __DIR__ . '/../..' . '/app/Services/FormBuilder/Components/SectionBreak.php',
         'FluentForm\\App\\Services\\FormBuilder\\Components\\Select' => __DIR__ . '/../..' . '/app/Services/FormBuilder/Components/Select.php',
         'FluentForm\\App\\Services\\FormBuilder\\Components\\SelectCountry' => __DIR__ . '/../..' . '/app/Services/FormBuilder/Components/SelectCountry.php',
+        'FluentForm\\App\\Services\\FormBuilder\\Components\\SelectDate' => __DIR__ . '/../..' . '/app/Services/FormBuilder/Components/SelectDate.php',
         'FluentForm\\App\\Services\\FormBuilder\\Components\\SubmitButton' => __DIR__ . '/../..' . '/app/Services/FormBuilder/Components/SubmitButton.php',
         'FluentForm\\App\\Services\\FormBuilder\\Components\\TabularGrid' => __DIR__ . '/../..' . '/app/Services/FormBuilder/Components/TabularGrid.php',
         'FluentForm\\App\\Services\\FormBuilder\\Components\\TermsAndConditions' => __DIR__ . '/../..' . '/app/Services/FormBuilder/Components/TermsAndConditions.php',

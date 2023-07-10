@@ -36,6 +36,7 @@ import {
     Switch,
     InputNumber,
     Card,
+    Link,
     Alert,
     Skeleton,
     SkeletonItem
@@ -79,6 +80,7 @@ Vue.use(Tooltip);
 Vue.use(Upload);
 Vue.use(Switch);
 Vue.use(InputNumber);
+Vue.use(Link);
 Vue.use(Alert);
 Vue.use(Skeleton);
 Vue.use(SkeletonItem);

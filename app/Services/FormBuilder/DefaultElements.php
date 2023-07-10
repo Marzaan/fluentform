@@ -786,32 +786,241 @@ $defaultElements = [
             'attributes' => [
                 'type'        => 'text',
                 'name'        => 'datetime',
-                'value'       => '',
                 'id'          => '',
+                'value'       => '',
                 'class'       => '',
                 'placeholder' => '',
             ],
             'settings' => [
-                'container_class'   => '',
-                'label'             => __('Date / Time', 'fluentform'),
-                'admin_field_label' => '',
-                'label_placement'   => '',
-                'date_config'       => '',
-                'date_format'       => 'd/m/Y',
-                'help_message'      => '',
-                'is_time_enabled'   => true,
-                'validation_rules'  => [
-                    'required' => [
-                        'value'   => false,
-                        'message' => __('This field is required', 'fluentform'),
-                    ],
-                ],
+                'admin_field_label'  => '',
+                'date_type'          => 'single',
+                'date_fields'   => '',
+                'date_default_value' => '',
+                'container_class'    => '',
+                'help_message'       => '',
+                'date_config'        => '',
                 'conditional_logics' => [],
+            ],
+            'single_field'  => [
+                'attributes' => [
+                    'type'        => 'text',
+                    'name'        => 'datetime',
+                    'id'          => '',
+                ],
+                'settings' => [
+                    'label'              => __('Date / Time', 'fluentform'),
+                    'label_placement'    => 'top',
+                    'date_format'        => 'd/m/Y',
+                    'validation_rules'   => [
+                        'required' => [
+                            'value'   => false,
+                            'message' => __('This field is required', 'fluentform'),
+                        ],
+                    ]
+                ],
+                'editor_options' => [
+                    'template'   => 'inputDate',
+                ],
+            ],
+            'multi_field' => [
+                'attributes' => [
+                    'name'  => 'datetime',
+                    'id'    => '',
+                ],
+                'settings' => [
+                    'label'             => __('Date / Time', 'fluentform'),
+                    'label_placement'   => 'hide_label',
+                    'date_format'       => 'd.m.Y',
+                    'custom_format'     => 'Y',
+                    'field_order'       => ['year']
+                ],
+                'fields' => [
+                    'day' => [
+                        'element'    => 'select',
+                        'attributes' => [
+                            'name'  => 'day',
+                            'type'  => 'select',
+                            'value' => '',
+                            'id'    => '',
+                            'class' => '',
+                            'placeholder' => 'Day',
+                        ],
+                        'settings' => [
+                            'label'                 => __('Day', 'fluentform'),
+                            'title'                 => __('Day', 'fluentform'),
+                            'help_message'          => '',
+                            'container_class'       => '',
+                            'validation_rules'      => [
+                                'required' => [
+                                    'value'   => false,
+                                    'message' => __('This field is required', 'fluentform'),
+                                ],
+                                'numeric' => [
+                                    'value'   => true,
+                                    'message' => __('This field must contain numeric value', 'fluentform'),
+                                ]
+                            ]
+                        ],
+                        'editor_options' => [
+                            'template'   => 'select',
+                        ],
+                    ],
+                    'month' => [
+                        'element'    => 'select',
+                        'attributes' => [
+                            'name'  => 'month',
+                            'type'  => 'select',
+                            'value' => '',
+                            'id'    => '',
+                            'class' => '',
+                            'placeholder' => 'Month',
+                        ],
+                        'settings' => [
+                            'label'                 => __('Month', 'fluentform'),
+                            'title'                 => __('Month', 'fluentform'),
+                            'help_message'          => '',
+                            'container_class'       => '',
+                            'validation_rules'      => [
+                                'required' => [
+                                    'value'   => false,
+                                    'message' => __('This field is required', 'fluentform'),
+                                ]
+                            ]
+                        ],
+                        'editor_options' => [
+                            'template'   => 'select',
+                        ],
+                    ],
+                    'year' => [
+                        'element'    => 'select',
+                        'attributes' => [
+                            'name'  => 'year',
+                            'type'  => 'select',
+                            'value' => '',
+                            'id'    => '',
+                            'class' => '',
+                            'placeholder' => 'Year',
+                        ],
+                        'settings' => [
+                            'label'                 => __('Year', 'fluentform'),
+                            'title'                 => __('Year', 'fluentform'),
+                            'help_message'          => '',
+                            'container_class'       => '',
+                            'validation_rules'      => [
+                                'required' => [
+                                    'value'   => false,
+                                    'message' => __('This field is required', 'fluentform'),
+                                ],
+                                'numeric' => [
+                                    'value'   => true,
+                                    'message' => __('This field must contain numeric value', 'fluentform'),
+                                ],
+                                'min' => [
+                                    'value'   => date("Y") - 10,
+                                    'message' => __('Year must be greater than or equal ', 'fluentform'),
+                                ],
+                                'max' => [
+                                    'value'   => date("Y") + 10,
+                                    'message' => __('Year must be less than or equal ', 'fluentform'),
+                                ]
+                            ]
+                        ],
+                        'editor_options' => [
+                            'template'   => 'select',
+                        ]
+                    ],
+                    'hour' => [
+                        'element'    => 'select',
+                        'attributes' => [
+                            'name'  => 'hour',
+                            'type'  => 'select',
+                            'value' => '',
+                            'id'    => '',
+                            'class' => '',
+                            'placeholder' => 'Hour',
+                        ],
+                        'settings' => [
+                            'label'                 => __('Hour', 'fluentform'),
+                            'title'                 => __('Hour', 'fluentform'),
+                            'help_message'          => '',
+                            'container_class'       => '',
+                            'validation_rules'      => [
+                                'required' => [
+                                    'value'   => false,
+                                    'message' => __('This field is required', 'fluentform'),
+                                ],
+                                'numeric' => [
+                                    'value'   => true,
+                                    'message' => __('This field must contain numeric value', 'fluentform'),
+                                ]
+                            ]
+                        ],
+                        'editor_options' => [
+                            'template'   => 'select',
+                        ]
+                    ],
+                    'minute' => [
+                        'element'    => 'select',
+                        'attributes' => [
+                            'name'  => 'minute',
+                            'type'  => 'select',
+                            'value' => '',
+                            'id'    => '',
+                            'class' => '',
+                            'placeholder' => 'Minute',
+                        ],
+                        'settings' => [
+                            'label'                 => __('Minute', 'fluentform'),
+                            'title'                 => __('Minute', 'fluentform'),
+                            'help_message'          => '',
+                            'container_class'       => '',
+                            'validation_rules'      => [
+                                'required' => [
+                                    'value'   => false,
+                                    'message' => __('This field is required', 'fluentform'),
+                                ],
+                                'numeric' => [
+                                    'value'   => true,
+                                    'message' => __('This field must contain numeric value', 'fluentform'),
+                                ]
+                            ]
+                        ],
+                        'editor_options' => [
+                            'template'   => 'select',
+                        ]
+                    ],
+                    'ampm' => [
+                        'element'    => 'select',
+                        'attributes' => [
+                            'name'  => 'ampm',
+                            'type'  => 'select',
+                            'value' => date("A"),
+                            'id'    => '',
+                            'class' => '',
+                            'placeholder' => 'AM',
+                        ],
+                        'settings' => [
+                            'label'                 => __('Period', 'fluentform'),
+                            'title'                 => __('Period', 'fluentform'),
+                            'help_message'          => '',
+                            'container_class'       => '',
+                            'validation_rules'      => [
+                                'required' => [
+                                    'value'   => false,
+                                    'message' => __('This field is required', 'fluentform'),
+                                ]
+                            ]
+                        ],
+                        'editor_options' => [
+                            'template'   => 'select',
+                        ]
+                    ]
+                ]
             ],
             'editor_options' => [
                 'title'      => __('Time & Date', 'fluentform'),
                 'icon_class' => 'ff-edit-date',
-                'template'   => 'inputText',
+                'template'   => 'dateFields',
             ],
         ],
         'input_image' => [

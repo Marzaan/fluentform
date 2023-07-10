@@ -235,6 +235,17 @@
                                         field_label: formItem.settings.label
                                     }
                                 }
+                            } else if (formItem.settings?.date_type == 'multiple') {
+                                const fieldOrder = formItem.multi_field?.settings?.field_order;
+                                this.mapElements(formItem.multi_field?.fields, item => {
+                                    if(fieldOrder.includes(item.attributes.name)){
+                                        let name = formItem.attributes.name + '[' + item.attributes.name + ']';
+                                        dependencies[name] = {
+                                            options: item.options ? this.formatOptions(item.options) : null,
+                                            field_label: formItem.attributes.name + '[' + item.settings.label + ']'
+                                        };
+                                    }
+                                });
                             } else {
                                 if (formItem.attributes.name) {
                                     dependencies[formItem.attributes.name] = {

@@ -17,6 +17,20 @@ if (! defined('ABSPATH')) {
 }
 
 $dateFormats = (new \FluentForm\App\Services\FormBuilder\Components\DateTime())->getAvailableDateFormats();
+$customDateFormats = (new \FluentForm\App\Services\FormBuilder\Components\SelectDate())->getCustomDateFormatsWithFieldOrder();
+
+// Add custom option for multi date format
+function getDateFormatsWithCustomOption($dateFormats)
+{
+    $customOption = [
+        'label' => 'custom - (Ex: d/m/Y h:i K)',
+        'value' => 'custom',
+    ];
+    array_unshift($dateFormats, $customOption);
+
+    return $dateFormats;
+}
+$multiDateFormats = getDateFormatsWithCustomOption($dateFormats);
 
 $dateConfigSettings = [
     'template'         => 'inputTextarea',
@@ -28,6 +42,11 @@ $dateConfigSettings = [
     'css_class'        => 'ff_code_editor',
     'inline_help_text' => 'Only valid JS object will work. Please check <a target="_blank" href="https://wpmanageninja.com/docs/fluent-form/field-types/time-date#advanced_configaration">the documentation for available config options</a>',
     'help_text'        => __('You can write your own date configuration as JS object. Please write valid configuration as per flatpickr config.', 'fluentform'),
+    'dependency' => [
+        'depends_on' => 'settings/date_type',
+        'value'      => 'single',
+        'operator'   => '==',
+    ],
 ];
 
 if (! defined('FLUENTFORMPRO')) {
@@ -113,6 +132,20 @@ $element_customization_settings = [
         'placeholder' => __('Select Date Format', 'fluentform'),
         'help_text'   => __('Select any date format from the dropdown. The user will be able to choose a date in this given format.', 'fluentform'),
         'options'     => $dateFormats,
+    ],
+    'multi_date_format' => [
+        'template'    => 'inputText',
+        'label'       => __('Date Format', 'fluentform'),
+        'placeholder' => __('Select Date Format', 'fluentform'),
+        'help_text'   => __('Select any date format from the dropdown. The user will be able to choose a date in this given format.', 'fluentform'),
+        'options'     => $multiDateFormats,
+    ],
+    'custom_format' => [
+        'template'       => 'inputText',
+        'label'          => __('Custom Format', 'fluentform'),
+        'placeholder'    => __('d/m/Y', 'fluentform'),
+        'help_text'      => __('Enter a valid date format. The default is "Y". You also can get single field like "d" for day, "j" for day (no leading zeros), "n" for month, "m" for month (with leading zeros), "y" for two-digit year, "Y" for full year, "H" for hour (24-hour format), "h" for hour (12-hour format), "i" for minutes, and "K" for AM/PM.', 'fluentform'),
+        'format_mapping' => $customDateFormats,
     ],
     'date_config' => $dateConfigSettings,
     'rows'        => [
@@ -340,6 +373,25 @@ $element_customization_settings = [
         'template' => 'nameFields',
         'label'    => __('Name Fields', 'fluentform'),
     ],
+    'date_fields' => [
+        'template' => 'dateFields',
+        'label'     => __('Fields', 'fluentform'),
+    ],
+    'date_type'   => [
+        'template' => 'radio',
+        'label'    => __('Date Type', 'fluentform'),
+        'help_text'=> __('Select a date type', 'fluentform'),
+        'options'  => [
+            [
+                'value' => 'single',
+                'label' => __('Single Field', 'fluentform'),
+            ],
+            [
+                'value' => 'multiple',
+                'label' => __('Multiple Fields', 'fluentform'),
+            ],
+        ],
+    ],
     'multi_column' => [
         'template' => 'inputCheckbox',
         'options'  => [
@@ -374,6 +426,16 @@ $element_customization_settings = [
         'type'      => 'text',
         'label'     => __('Dynamic Default Value', 'fluentform'),
         'help_text' => __('If you would like to pre-populate the value of a field, enter it here.', 'fluentform'),
+    ],
+    'date_default_value' => [
+        'template'  => 'inputValue',
+        'label'     => __('Default Value', 'fluentform'),
+        'help_text' => __('If you would like to pre-populate the value of a field, enter it here.', 'fluentform') . ' <a target="_blank" rel="noopener" href="https://wpmanageninja.com/docs/fluent-form/miscellaneous/form-editor-smart-codes/">View All the smartcodes here</a>',
+        'dependency' => [
+            'depends_on' => 'settings/date_type',
+            'value'      => 'single',
+            'operator'   => '==',
+        ],
     ],
     'max_selection' => [
         'template'   => 'inputNumber',

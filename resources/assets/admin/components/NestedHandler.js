@@ -15,7 +15,9 @@ import inputFile from './templates/inputFile.vue'
 import shortcode from './templates/shortcode.vue'
 import inputRadio from './templates/inputRadio.vue'
 import inputCheckable from './templates/inputCheckable.vue'
+import inputDate from './templates/inputDate.vue'
 import nameFields from './templates/nameFields.vue'
+import dateFields from './templates/dateFields.vue'
 import actionHook from './templates/actionHook.vue'
 import customHTML from './templates/customHTML.vue'
 import inputHidden from './templates/inputHidden.vue'
@@ -67,7 +69,9 @@ export default {
         ff_turnstile: turnstile,
         ff_inputRadio: inputRadio,
         ff_inputCheckable: inputCheckable,
+        ff_inputDate: inputDate,
         ff_nameFields: nameFields,
+        ff_dateFields: dateFields,
         ff_actionHook: actionHook,
         ff_customHTML: customHTML,
         ff_inputHidden: inputHidden,

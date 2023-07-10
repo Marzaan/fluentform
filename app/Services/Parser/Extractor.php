@@ -306,6 +306,17 @@ class Extractor
         // properties in a way so that we can use dot notation to access.
         $customFields = Arr::get($this->field, 'fields');
 
+        // If it's a date field, then we have to handle it differently
+        // as we have two types of date fields - single and multiple.
+        $customField = '';
+        $dateFieldType = Arr::get($this->field, 'settings.date_type');
+
+        if ('single' === $dateFieldType) {
+            $customField = Arr::get($this->field, 'single_field');
+        } elseif ('multiple' === $dateFieldType) {
+            $customFields = Arr::get($this->field, 'multi_field.fields');
+        }
+
         if ($customFields) {
             $parentAttribute = Arr::get($this->field, 'attributes.name');
 
@@ -347,6 +358,19 @@ class Extractor
                 // it to the extract field method to extract it's data.
                 $this->extractField($customField);
             }
+        }
+        elseif ($customField) {
+            // Extract parent element, settings, and attributes
+            $parentElement = Arr::get($this->field, 'element');
+            $parentSettings = Arr::get($this->field, 'settings');
+            $parentAttribute = Arr::get($this->field, 'attributes');
+
+            // Set the extracted values to the customField array
+            $customField['element'] = $parentElement;
+            $customField['attributes'] = $parentAttribute;
+            $customField['settings'] = array_merge($parentSettings, $customField['settings']);
+            
+            $this->extractField($customField);
         }
 
         return $this;
