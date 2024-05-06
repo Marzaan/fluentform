@@ -506,7 +506,7 @@ export default function ($, $theForm, fluentFormVars, formSelector) {
         if (!window.ff_disable_auto_step) {
 
             let timeout = 0;
-            if ($theForm.find('.fluentform-step.active .ff_excluded').legth) {
+            if ($theForm.find('.fluentform-step.active .ff_excluded').length) {
                 timeout = 50;
             }
 

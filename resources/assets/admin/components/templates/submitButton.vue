@@ -15,7 +15,7 @@
                 v-html="submitButton.settings.button_ui.text"
                 :style="btnStyles">
             </button>
-            <img v-else :src="submitButton.settings.button_ui.img_url" alt="Submit Button" style="max-width: 200px;">
+            <img v-else :src="submitButton.settings.button_ui.img_url" :alt="$t('Submit Button')" style="max-width: 200px;">
         </template>
 
         <!-- Button before 1.2.6 -->

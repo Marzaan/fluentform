@@ -7,6 +7,7 @@ use FluentForm\App\Models\Form;
 use FluentForm\App\Models\FormMeta;
 use FluentForm\App\Models\Submission;
 use FluentForm\App\Models\SubmissionMeta;
+use FluentForm\App\Services\FormBuilder\Components\SelectCountry;
 use FluentForm\Framework\Helpers\ArrayHelper;
 use FluentForm\App\Helpers\Traits\GlobalDefaultMessages;
 
@@ -102,9 +103,9 @@ class Helper
     public static function getEntryStatuses($form_id = false)
     {
         $statuses = [
-            'unread'    => 'Unread',
-            'read'      => 'Read',
-            'favorites' => 'Favorites',
+            'unread'    => __('Unread', 'fluentform'),
+            'read'      => __('Read', 'fluentform'),
+            'favorites' => __('Favorites', 'fluentform'),
         ];
 
         $statuses = apply_filters_deprecated(
@@ -432,7 +433,9 @@ class Helper
 
         return $validation;
     }
+    
 
+    
     public static function hasPartialEntries($formId)
     {
         static $cache = [];
@@ -708,6 +711,8 @@ class Helper
     {
         $formulas = ['=', '-', '+', '@', "\t", "\r"];
 
+        $formulas = apply_filters('fluentform/csv_sanitize_formulas', $formulas);
+
         if (Str::startsWith($content, $formulas)) {
             $content = "'" . $content;
         }
@@ -892,5 +897,143 @@ class Helper
                 }
             }
         }
+    }
+
+    /**
+     * Validate form input value against database values
+     *
+     * @param $field array Form Field
+     * @param $formData array From Data
+     * @param $form object From
+     * @param $fieldName string optional
+     * @param $inputValue mixed optional
+     *
+     * @return string
+     * Return Error message on fail. Otherwise, return empty string
+     */
+    public static function validateInput($field, $formData, $form, $fieldName = '', $inputValue = [])
+    {
+        $error = '';
+        if (!$fieldName) {
+            $fieldName = ArrayHelper::get($field, 'name');
+        }
+        if (!$fieldName) {
+            return $error;
+        }
+        if (!$inputValue) {
+            $inputValue = ArrayHelper::get($formData, $fieldName);
+        }
+        if ($inputValue) {
+            $rawField = ArrayHelper::get($field, 'raw');
+            if (!$rawField) {
+                $rawField = $field;
+            }
+            $fieldType = ArrayHelper::get($rawField, 'element');
+            $rawField = apply_filters('fluentform/rendering_field_data_' . $fieldType, $rawField, $form);
+            $options = [];
+            if ("net_promoter_score" === $fieldType) {
+                $options = ArrayHelper::get($rawField, 'options', []);
+            } elseif ('ratings' == $fieldType) {
+                $options = array_keys(ArrayHelper::get($rawField, 'options', []));
+            } elseif ('gdpr_agreement' == $fieldType || 'terms_and_condition' == $fieldType) {
+                $options = ['on'];
+            } elseif (in_array($fieldType, ['input_radio', 'select', 'input_checkbox'])) {
+                if (ArrayHelper::isTrue($rawField, 'attributes.multiple')) {
+                    $fieldType = 'multi_select';
+                }
+                $options = array_column(
+                    ArrayHelper::get($rawField, 'settings.advanced_options', []),
+                    'value'
+                );
+            }
+
+            if ($options) {
+                $options = array_map('sanitize_text_field', $options);
+            }
+
+            $isValid = true;
+            switch ($fieldType) {
+                case 'input_radio':
+                case 'select':
+                case 'net_promoter_score':
+                case 'ratings':
+                case 'gdpr_agreement':
+                case 'terms_and_condition':
+                case 'input_checkbox':
+                case 'multi_select':
+                    $skipValidationInputsWithOptions = apply_filters('fluentform/skip_validation_inputs_with_options', false, $fieldType, $form, $formData);
+                    if ($skipValidationInputsWithOptions) {
+                        break;
+                    }
+                    if (is_array($inputValue)) {
+                        $isValid = array_diff($inputValue, $options);
+                        $isValid = empty($isValid);
+                    } else {
+                        $isValid = in_array($inputValue, $options);
+                    }
+                    break;
+                case 'input_number':
+                    if (is_array($inputValue)) {
+                        $hasNonNumricValue = in_array(false, array_map('is_numeric', $inputValue));
+                        if ($hasNonNumricValue) {
+                            $isValid = false;
+                        }
+                    } else {
+                        $isValid = is_numeric($inputValue);
+                    }
+                    break;
+                case 'select_country':
+                    $fieldData = ArrayHelper::get($field, 'raw');
+                    $data = (new SelectCountry())->loadCountries($fieldData);
+                    $validCountries = ArrayHelper::get($fieldData, 'settings.country_list.priority_based', []);
+                    $validCountries = array_merge($validCountries, array_keys(ArrayHelper::get($data, 'options')));
+                    $isValid = in_array($inputValue, $validCountries);
+                    break;
+                case 'repeater_field':
+                    foreach (ArrayHelper::get($rawField, 'fields', []) as $index => $repeaterField) {
+                        $repeaterFieldValue = array_filter(array_column($inputValue, $index));
+                        if ($repeaterFieldValue && $error = static::validateInput($repeaterField, $formData, $form, $fieldName, $repeaterFieldValue)) {
+                            $isValid = false;
+                            break;
+                        }
+                    }
+                    break;
+                case 'tabular_grid':
+                    $rows = array_keys(ArrayHelper::get($rawField, 'settings.grid_rows', []));
+                    $submittedRows = array_keys(ArrayHelper::get($formData, $fieldName, []));
+                    $rowDiff = array_diff($submittedRows, $rows);
+                    $isValid = empty($rowDiff);
+                    if ($isValid) {
+                        $columns = array_keys(ArrayHelper::get($rawField, 'settings.grid_columns', []));
+                        $submittedCols = ArrayHelper::flatten(ArrayHelper::get($formData, $fieldName, []));
+                        $colDiff = array_diff($submittedCols, $columns);
+                        $isValid = empty($colDiff);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            if (!$isValid) {
+                $error = __('The given data was invalid', 'fluentform');
+            }
+        }
+        return $error;
+    }
+
+    public static function getWhiteListedFields($formId)
+    {
+        $whiteListedFields = [
+            '__fluent_form_embded_post_id',
+            '_fluentform_' . $formId . '_fluentformnonce',
+            '_wp_http_referer',
+            'g-recaptcha-response',
+            'h-captcha-response',
+            'cf-turnstile-response',
+            '__stripe_payment_method_id',
+            '__ff_all_applied_coupons',
+            '__entry_intermediate_hash',
+        ];
+
+        return apply_filters('fluentform/white_listed_fields', $whiteListedFields, $formId);
     }
 }

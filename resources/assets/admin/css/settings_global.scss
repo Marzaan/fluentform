@@ -127,9 +127,6 @@
   .ff_form_wrap {
     left: 56px;
   }
-  .form_internal_menu {
-    left: 36px;
-  }
 }
 
 // screen entries
@@ -1233,6 +1230,7 @@ span + .ff_payment_badge{
 
 .el-tooltip__popper{
   max-width: 300px;
+  z-index: 99999999999 !important;
 }
 
 .ff_inventory_list{
@@ -1253,4 +1251,18 @@ span + .ff_payment_badge{
   width: 50%;
   margin-bottom: 10px;
 }
+// global-overlay
+.global-overlay{
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: none;
+  &.active{
+    display: block;
+  }
+}
+
 @import "../styles/responsive";

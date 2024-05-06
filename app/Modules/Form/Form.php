@@ -714,21 +714,7 @@ class Form
         $baseUrl = admin_url('admin.php?page=fluent_forms');
         return $baseUrl . '&form_id=' . $form->id . '&route=settings&sub_route=form_settings#basic_settings';
     }
-
-    public function getAllForms()
-    {
-        $fields = $this->request->get('fields');
-
-        if ($fields) {
-            $forms = $this->model
-                ->select($fields)
-                ->orderBy('created_at', 'DESC')->get();
-        } else {
-            $forms = $this->model->orderBy('created_at', 'DESC')->get();
-        }
-
-        wp_send_json($forms, 200);
-    }
+    
 
     /**
      * Map pdf feed ID to replace with duplicated PDF feed ID when duplicating form

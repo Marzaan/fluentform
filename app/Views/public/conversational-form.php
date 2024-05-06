@@ -19,7 +19,7 @@
     <?php if (!empty($meta['google_font_href'])): ?>
 
         <link rel="preconnect" href="https://fonts.gstatic.com/">
-        <link id="ffc_google_font" href='<?php echo $meta['google_font_href']; ?>' rel="stylesheet" type="text/css">
+        <link id="ffc_google_font" href='<?php echo esc_url($meta['google_font_href']); ?>' rel="stylesheet" type="text/css">
     <?php endif; ?>
 
     <?php wp_site_icon(); ?>
@@ -94,11 +94,11 @@
     </style>
 
     <style id="ffc_font_css" type="text/css">
-        <?php echo $meta['font_css']; ?>
+        <?php echo fluentformSanitizeCSS($meta['font_css']); ?>
     </style>
 
     <style type="text/css">
-        <?php echo $submit_css; ?>
+        <?php echo fluentformSanitizeCSS($submit_css); ?>
         .ffc_loading_screen {
             height: 100vh;
             width: 100%;
@@ -122,7 +122,7 @@
 </head>
 <body class="ff_conversation_page_body  ff_conversation_page_<?php echo $form_id; ?>">
 <div class="ffc_conv_wrapper">
-    <div class="frm-fluent-form ff_conv_app ff_conv_app_frame fluent_form_<?php echo $form_id; ?> ff_conv_app_<?php echo $form_id; ?> ffc_media_hide_mob_<?php echo $design['hide_media_on_mobile']; ?>" data-form_id="<?php echo $form_id ?>">
+    <div class="frm-fluent-form ff_conv_app ff_conv_app_frame fluent_form_<?php echo $form_id; ?> ff_conv_app_<?php echo $form_id; ?> ffc_media_hide_mob_<?php echo esc_attr($design['hide_media_on_mobile']); ?>" data-form_id="<?php echo $form_id ?>">
         <div data-var_name="fluent_forms_global_var" class="ffc_conv_form" style="width: 100%" id="ffc_app_landing">
             <div class="ffc_loading_screen">
                 <h2><?php _e('Loading...', 'fluentform'); ?></h2>

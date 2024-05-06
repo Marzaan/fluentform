@@ -33,7 +33,7 @@
         <elLabel
             slot="label"
             :label="listItem.label + ' Image ALT Text'"
-            helpText="Alt attribute of the image">
+            :helpText="$t('Alt attribute of the image')">
         </elLabel>
 
         <el-input v-model="editItem.settings[prop].img_alt"></el-input>

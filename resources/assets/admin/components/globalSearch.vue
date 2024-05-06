@@ -7,7 +7,7 @@
                            prefix-icon="el-icon-search"
                            @input="search($event.target.value)"
                            type="text" name="search"
-                           :placeholder="placeholder"
+                           :placeholder="$t(placeholder)"
                            autocomplete="off"
                     />
                     <span class="el-input__prefix"><i class="el-input__icon el-icon-search"></i></span>
@@ -19,27 +19,27 @@
 			                ref="links" v-for="(link, i) in filteredLinks"
 			                :key="'link_' + i"
 			                tabindex='1'
-			                @keyup.enter="goToSlug($event, link.item || link)"
+			                :class="{'active-search-link' : linkFocusIndex === i}"
 			                @click="goToSlug($event, link.item || link)"
 		                >
 			                <span>{{ link.item?.title || link.title }}</span>
 		                </li>
 	                </template>
 	                <li v-else>
-		                <span>Search not match. Try different.</span>
+		                <span>{{ $t('Search not match. Try a different query.') }}</span>
 	                </li>
                 </ul>
             </div>
             <div>
                 <ul class="search-commands">
-                    <li>Esc to close</li>
+                    <li>{{ $t('Esc to close') }}</li>
                     <li>
-                        Navigate
+                        {{ $t('Navigate') }}
                         <i class="el-icon-bottom"></i>
                         <i class="el-icon-top"></i>
                     </li>
-                    <li>Tab to focus search</li>
-                    <li>Enter to Select</li>
+                    <li>{{ $t('Tab to focus search') }}</li>
+                    <li>{{ $t('Enter to Select') }}</li>
                 </ul>
             </div>
         </div>
@@ -168,6 +168,14 @@ export default {
 					e.preventDefault();
 					this.$refs.searchInput?.focus();
 					this.linkFocusIndex = 0;
+				} else if (e.keyCode === 13) {
+					// Enter press
+					if (this.filteredLinks.length) {
+						const link = this.filteredLinks[this.linkFocusIndex];
+						if (link) {
+							this.goToSlug(undefined, link.item || link);
+						}
+					}
 				}
 			}
 		},
@@ -178,7 +186,7 @@ export default {
 				} else {
 					this.linkFocusIndex += 1;
 				}
-				if (this.linkFocusIndex > this.filteredLinks.length || this.linkFocusIndex <= 0) {
+				if (this.linkFocusIndex >= this.filteredLinks.length || this.linkFocusIndex <= 0) {
 					this.$refs.searchInput?.focus();
 					this.$refs.searchBody?.scroll?.({top:0});
 					this.linkFocusIndex = 0;

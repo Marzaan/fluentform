@@ -20,7 +20,7 @@
             <el-radio 
                 v-for="(redirectOption, optionName) in redirectToOptions"
                 v-model="confirmation.redirectTo" 
-                :label="optionName" 
+                :label="$t(optionName)"
                 border 
                 :key="optionName"
             >
@@ -52,7 +52,7 @@
                 <wp-editor :height="150" :editor-shortcodes="emailBodyeditorShortcodes" v-model="confirmation.messageToShow" />
             </el-form-item>
 
-            <!--After form submisssion behavior-->
+            <!--After form submission behavior-->
             <el-form-item class="ff-form-item">
                 <template slot="label">
                     {{ $t('After Form Submission') }}
@@ -155,7 +155,7 @@
                         v-model="confirmation.query_strings"
                         :data="inputsFirstShortcodes"
                     ></input-popover>
-                    <p class="mt-1 fs-14"><em>Sample: phone={inputs.phone}&email={inputs.email}</em></p>
+                    <p class="mt-1 fs-14"><em>{{ $t('Sample:') }} phone={inputs.phone}&email={inputs.email}</em></p>
                 </div>
             </el-form-item>
 
@@ -203,8 +203,8 @@
                 if (freshCopy && freshCopy.length) {
                     freshCopy[0].shortcodes = {
                         ...freshCopy[0].shortcodes,
-                        '{all_data}':'All Data',
-                        '{all_data_without_hidden_fields}' : 'All Data Without Hidden Fields'
+                        '{all_data}': 'All Data',
+                        '{all_data_without_hidden_fields}': 'All Data Without Hidden Fields'
                     };
                 }
                 return freshCopy;

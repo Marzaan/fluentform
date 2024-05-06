@@ -11,9 +11,9 @@
                         :moved="handleMoved"
                         :wrapper="wrapper">
 
-            <div @click="editSelected(index, item)" class="item-actions-wrapper"
+            <div @mouseenter='maybeHideContainerActions' @mouseleave="maybeShowContainerActions" @click="editSelected(index, item)" class="item-actions-wrapper"
                  :class="item.element == 'container' ? 'hover-action-top-right' : 'hover-action-middle'">
-                <div class="item-actions">
+                <div class="item-actions " :class="item.element == 'container' ? 'container-actions' : 'field-actions'">
                     <i class="el-icon el-icon-rank"></i>
                     <i v-if="index > 0" @click.stop="handleUpDown(index, -1)" class="el-icon el-icon-top"></i>
                     <i v-if="(index + 1) < wrapper.length" @click.stop="handleUpDown(index, 1)" class="el-icon el-icon-bottom"></i>
@@ -21,7 +21,7 @@
                     <i @click="duplicateSelected(index, item)" class="el-icon el-icon-document-copy"></i>
                     <i @click="askRemoveConfirm(index)" class="el-icon el-icon-delete"></i>
                     <i
-                        v-if="item.element == 'container' && item.columns.length > 1"
+                        v-if="item.element == 'container' && item.columns.length > 1 && item.modified"
                         @click="resetContainer()"
                         class="el-icon el-icon-refresh-right"
                     />
@@ -64,7 +64,7 @@
                                     </list>
                                 </vddl-list>
                             </pane>
-                        </splitpanes>  
+                        </splitpanes>
                 </vddl-nodrag>
 
             </div>

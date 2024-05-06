@@ -26,7 +26,7 @@
                         v-for="status in postStatuses"
                         :key="status"
                         :value="status"
-                        :label="status | ucFirst"
+                        :label="$t(status) | ucFirst"
                     />
                 </el-select>
             </el-form-item>

@@ -1,7 +1,7 @@
 <template>
     <withLabel :item="item">
         <div class="ff-el-form-captcha-img-wrapper">
-            <img :src="plugin_url+'img/turnstile-placeholder.png'" alt="turnstile-placeholder">
+            <img :src="plugin_url+'img/turnstile-placeholder.png'" :alt="$t('turnstile-placeholder')">
         </div>
     </withLabel>
 </template>

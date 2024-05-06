@@ -1,25 +1,25 @@
 <template>
     <div class="ff-filter-fields-wrap">
         <el-checkbox v-model="conditionals.status" v-if="hasPro">
-            {{ labels.status_label }}
+            {{ $t(labels.status_label) }}
         </el-checkbox>
 
         <div v-if="conditionals.status" class="mt-3">
             <div class="mb-3">
-                {{ labels.notification_if_start }}
+                {{ $t(labels.notification_if_start) }}
                 <select class="ff-select ff-select-small ml-1 mr-1" v-model="conditionals.type">
                     <option v-for="(label, value) in {all: 'All', any: 'Any'}" :key="value" :value="value">
                         {{ label }}
                     </option>
                 </select>
-                {{ labels.notification_if_end }}
+                {{ $t(labels.notification_if_end) }}
             </div>
 
             <el-row class="items-center" v-for="(logic, key) in items" :key="key" :gutter="12">
                 <el-col :md="8">
                     <div class="mb-2">
-                        <el-select v-model="items[key].field" style="width: 100%" @change="items[key].value = ''">
-                            <el-option 
+                        <el-select popper-class="ff-mw-100" v-model="items[key].field" style="width: 100%" @change="items[key].value = ''">
+                            <el-option
                                 v-for="(field, key) in fields" :key="key"
                                 :label="field.admin_label" :value="key"
                             ></el-option>
@@ -33,7 +33,7 @@
                             <el-option-group :label="$t('General Operators')">
                                 <el-option value="=" :label="$t('equal')"></el-option>
                                 <el-option value="!=" :label="$t('not equal')"></el-option>
-                                <template v-if="fields[logic.field] && !Object.keys(fields[logic.field].options).length">
+                                <template v-if="fields[logic.field] && !Object.keys(fields[logic.field].options || {}).length">
                                     <el-option value=">" :label="$t('greater than')"></el-option>
                                     <el-option value="<" :label="$t('less than')"></el-option>
                                     <el-option value=">=" :label="$t('greater than or equal')"></el-option>
@@ -60,8 +60,8 @@
                             <el-input type="number" step="1" :placeholder="('Enter length in number')" v-model="items[key].value" />
                         </template>
                         <template v-else>
-                            <el-select v-if="fields[logic.field] && Object.keys(fields[logic.field].options).length"
-                                    v-model="items[key].value" style="width: 100%">
+                            <el-select v-if="fields[logic.field] && Object.keys(fields[logic.field].options || {}).length"
+                                    v-model="items[key].value" clearable filterable allow-create style="width: 100%">
                                 <el-option v-for="(label, value) in fields[logic.field].options" :key="value"
                                         :label="label" :value="value"
                                 ></el-option>

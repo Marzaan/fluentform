@@ -39,7 +39,7 @@
                     </el-col>
                     <el-col :span="5">
                         <div class="ff_form_group">
-                            <h6 class="fs-15 mb-3">Status</h6>
+                            <h6 class="fs-15 mb-3">{{ $t('Status') }}</h6>
                             <el-select class="w-100" @change="getLogs()" multiple clearable v-model="selected_status" :placeholder="$t('Select Status')">
                                 <el-option
                                     v-for="item in available_statuses"
@@ -52,7 +52,7 @@
                     </el-col>
                     <el-col :span="8">
                         <div class="ff_form_group">
-                            <h6 class="fs-15 mb-3">Date</h6>
+                            <h6 class="fs-15 mb-3">{{ $t('Date') }}</h6>
                             <el-date-picker
                                     v-model="filter_date_range"
                                     type="datetimerange"
@@ -73,12 +73,22 @@
                 <div class="ff_activity_logs_body mt-4">
                     <el-skeleton :loading="loading" animated :rows="10">
                         <div v-if="multipleSelection.length" class="logs_actions mb-3">
-                            <remove icon="el-icon-delete" @on-confirm="deleteItems()">
-                                <button type="button" class="el-button el-button--danger el-button--mini">
-                                    <i class="el-icon-delete"></i>
-                                    <span>{{ $t('Delete Selected Logs') }}</span>
-                                </button>
-                            </remove>
+                            <btn-group size="sm">
+                                <btn-group-item>
+                                    <remove icon="el-icon-delete" @on-confirm="deleteItems()">
+                                        <button type="button" class="el-button el-button--danger el-button--mini">
+                                            <i class="el-icon-delete"></i>
+                                            <span>{{ $t('Delete Selected Logs') }}</span>
+                                        </button>
+                                    </remove>
+                                </btn-group-item>
+                                <btn-group-item>
+                                    <el-button @click="runActions()" type="info" size="mini">
+                                        <i class="mr-1 ff-icon-refresh"></i>
+                                        {{ $t('Run Selected Action') }}
+                                    </el-button>
+                                </btn-group-item>
+                            </btn-group>
                         </div>
 
                         <el-table
@@ -87,41 +97,53 @@
                             stripe
                             @selection-change="handleSelectionChange"
                         >
-                            <el-table-column type="selection" width="50"></el-table-column>
+                            <el-table-column sortable type="selection" width="50"></el-table-column>
                             <el-table-column type="expand">
                                 <template slot-scope="props">
                                     <p v-html="props.row.note"></p>
                                 </template>
                             </el-table-column>
-                            <el-table-column width="100px" :label="$t('ID')">
+                            <el-table-column sortable prop="id" width="100px" :label="$t('ID')">
+                            </el-table-column>
+                            <el-table-column sortable :label="$t('Submission ID')">
                                 <template slot-scope="props">
                                     <a :href="props.row.submission_url">#{{props.row.submission_id}}</a>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="form_title" :label="$t('Form')"></el-table-column>
-                            <el-table-column prop="status" :label="$t('Status')" width="140">
+                            <el-table-column sortable prop="form_title" :label="$t('Form')"></el-table-column>
+                            <el-table-column sortable prop="status" :label="$t('Status')" width="140">
                                 <template slot-scope="props">
                                     <el-tag :type="`${props.row.status == 'failed' ? 'danger' : props.row.status == 'success' ? 'success' : 'info'}`" size="small" class="el-tag--pill text-capitalize">
                                         {{props.row.status}}
                                     </el-tag>
                                 </template>
                             </el-table-column>
-                            <el-table-column :label="$t('Component')">
+                            <el-table-column sortable :label="$t('Component')">
                                 <template slot-scope="props">
                                     <div>{{getReadableName(props.row.component)}}</div>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="updated_at" :label="$t('Date')" width="180"></el-table-column>
-                            <el-table-column width="70" :label="$t('Action')">
+                            <el-table-column width="115" fixed="right" align="center" :label="$t('Action')">
                                 <template slot-scope="props">
-                                    <remove :plain="true" @on-confirm="deleteItems(props.row.id)">
-                                        <el-button
-                                            class="el-button--icon"
-                                            size="mini"
-                                            type="danger"
-                                            icon="el-icon-delete"
-                                        />
-                                    </remove>
+                                    <btn-group size="sm">
+                                        <btn-group-item v-if="hasPro">
+                                            <el-tooltip  popper-class="ff_tooltip_wrap" :content="$t('Replay Action')" placement="top">
+                                                <el-button v-loading="replaying[props.row.id] ==true" class="el-button--icon" icon="el-icon-refresh" @click="runActions(props.row)" type="info" size="mini">
+                                                </el-button>
+                                            </el-tooltip>
+                                        </btn-group-item>
+                                        <btn-group-item>
+                                            <remove :plain="true" @on-confirm="deleteItems(props.row.id)">
+                                                <el-button
+                                                    class="el-button--icon"
+                                                    size="mini"
+                                                    type="danger"
+                                                    icon="el-icon-delete"
+                                                />
+                                            </remove>
+                                        </btn-group-item>
+                                    </btn-group>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -152,12 +174,16 @@
   import each from 'lodash/each';
   import remove from "../components/confirmRemove";
   import { scrollTop } from '@/admin/helpers';
+  import BtnGroup from "@/admin/components/BtnGroup/BtnGroup.vue";
+  import BtnGroupItem from "@/admin/components/BtnGroup/BtnGroupItem.vue";
 
   export default {
         name: 'ApiLogs',
         props: ['app'],
         components:{
-          remove
+            BtnGroupItem,
+            BtnGroup,
+            remove
         },
         data() {
             return {
@@ -170,6 +196,7 @@
                 selected_status: [],
                 selected_component: [],
                 multipleSelection: [],
+                replaying: {},
                 paginate: {
                     total: 0,
                     current_page: 1,
@@ -210,7 +237,8 @@
 	                            const lastWeedEnd = new Date(end.setHours(23, 59, 59, 999))
                                 picker.$emit('pick', [lastWeedStart, lastWeedEnd]);
                             }
-                        }, {
+                        },
+                        {
                             text: 'Last month',
                             onClick(picker) {
                                 const end = new Date();
@@ -231,14 +259,14 @@
 
                 const url = FluentFormsGlobal.$rest.route('getLogs');
                 FluentFormsGlobal.$rest.get(url, {
-                    page: this.paginate.current_page,
-                    per_page: this.paginate.per_page,
-                    form_id: this.selected_form,
-                    status: this.selected_status,
-                    component: this.selected_component,
-                    date_range : this.filter_date_range,
-                    type: 'api',
-                })
+                        page: this.paginate.current_page,
+                        per_page: this.paginate.per_page,
+                        form_id: this.selected_form,
+                        status: this.selected_status,
+                        component: this.selected_component,
+                        date_range : this.filter_date_range,
+                        type: 'api',
+                    })
                     .then(response => {
                         this.logs = response.data;
                         this.total = response.total;
@@ -271,13 +299,65 @@
                         this.getLogs();
                         this.multipleSelection = [];
                         this.$success(response.message);
-
                     })
                     .catch(error => {
                         this.$fail(error.message);
                     })
                     .finally(() => {
                         this.loading = false;
+                    });
+            },
+            runActions(singlelog = false) {
+                let logIds = [];
+
+                if (singlelog) {
+                    this.$set(this.replaying, singlelog.id, true);
+                    logIds = [
+                        {
+                            action_id: singlelog.id,
+                            feed_id: singlelog.feed_id,
+                            form_id: singlelog.form_id,
+                            entry_id: singlelog.submission_id,
+                            integration_enabled: singlelog.integration_enabled
+                        }
+                    ];
+                } else {
+                    each(this.multipleSelection, (item) => {
+                        logIds.push(
+                            {
+                                action_id: item.id,
+                                feed_id: item.feed_id,
+                                form_id: item.form_id,
+                                entry_id: item.submission_id
+                            }
+                        );
+                    });
+                }
+                let data = {
+                    action: 'ffpro_post_integration_feed_replay',
+                    verify_condition: 'yes',
+                    multiple_actions: false,
+                    logIds
+                };
+
+                if (logIds.length > 1) {
+                    data.multiple_actions = true;
+                }
+
+                FluentFormsGlobal.$post(data)
+                    .then(response => {
+                        this.$success(response.data.message);
+                    })
+                    .fail(error => {
+                        if (!error.responseJSON && !error.responseText || error.responseText == '0') {
+                            alert(this.$t('Looks like you are using older version of fluent forms pro. Please update to latest version'));
+                            return;
+                        }
+                        this.$fail(error.responseJSON.data.message);
+                    })
+                    .always(() => {
+                        this.getLogs();
+                        this.replaying[singlelog.id] = false;
                     });
             },
             handleSelectionChange(val) {
@@ -324,6 +404,11 @@
                     per_page: data.per_page || localStorage.getItem('apiLogsPerPage') || 10,
                 }
             },
+        },
+        computed: {
+            hasPro() {
+                return !!window.FluentFormApp.hasPro;
+            }
         },
         mounted() {
             this.getLogs();

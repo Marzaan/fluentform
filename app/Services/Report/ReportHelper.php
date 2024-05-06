@@ -12,7 +12,7 @@ use FluentForm\Framework\Helpers\ArrayHelper as Arr;
 
 class ReportHelper
 {
-    public static function generateReport($form, $statuses = [])
+    public static function generateReport($form, $statuses = ['read', 'unread'])
     {
         $formInputs = FormFieldsParser::getEntryInputs($form, ['admin_label', 'element', 'options']);
         $inputLabels = FormFieldsParser::getAdminLabels($form, $formInputs);
@@ -65,7 +65,7 @@ class ReportHelper
         ];
     }
 
-    public static function getInputReport($formId, $fieldNames, $statuses = [])
+    public static function getInputReport($formId, $fieldNames, $statuses = ['read', 'unread', 'unapproved', 'approved', 'declined', 'unconfirmed', 'confirmed'])
     {
         if (!$fieldNames) {
             return [];
@@ -96,7 +96,10 @@ class ReportHelper
             $formattedReports[$report->field_name]['total_entry'] = static::getEntryTotal($report->field_name, $formId,
                 $statuses);
         }
-
+        if ($formattedReports) {
+            //sync with form field order
+            $formattedReports = array_replace(array_intersect_key(array_flip($fieldNames), $formattedReports), $formattedReports);
+        }
         return $formattedReports;
     }
 

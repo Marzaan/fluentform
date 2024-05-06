@@ -61,13 +61,13 @@ class TransferService
                     } else {
                         throw new Exception(__('You have a faulty JSON file, please export the Fluent Forms again.', 'fluentform'));
                     }
-
+                    $formTitle = sanitize_text_field(Arr::get($formItem, 'title'));
                     $form = [
-                        'title'       => Arr::get($formItem, 'title'),
+                        'title'       => $formTitle ?: 'Blank Form',
                         'form_fields' => $formFields,
-                        'status'      => Arr::get($formItem, 'status', 'published'),
-                        'has_payment' => Arr::get($formItem, 'has_payment', 0),
-                        'type'        => Arr::get($formItem, 'type', 'form'),
+                        'status'      => sanitize_text_field(Arr::get($formItem, 'status', 'published')),
+                        'has_payment' => sanitize_text_field(Arr::get($formItem, 'has_payment', 0)),
+                        'type'        => sanitize_text_field(Arr::get($formItem, 'type', 'form')),
                         'created_by'  => get_current_user_id(),
                     ];
 
@@ -87,10 +87,15 @@ class TransferService
 
                     if (isset($formItem['metas'])) {
                         foreach ($formItem['metas'] as $metaData) {
+                            $metaKey = sanitize_text_field(Arr::get($metaData, 'meta_key'));
+                            $metaValue = Arr::get($metaData, 'value');
+                            if ("ffc_form_settings_generated_css" == $metaKey || "ffc_form_settings_meta" == $metaKey) {
+                                $metaValue = str_replace('ff_conv_app_' . Arr::get($formItem, 'id'), 'ff_conv_app_' . $formId, $metaValue);
+                            }
                             $settings = [
                                 'form_id'  => $formId,
-                                'meta_key' => Arr::get($metaData, 'meta_key'),
-                                'value'    => Arr::get($metaData, 'value'),
+                                'meta_key' => $metaKey,
+                                'value'    => $metaValue,
                             ];
                             FormMeta::insert($settings);
                         }
@@ -107,9 +112,7 @@ class TransferService
                             }
                         }
                     }
-                    do_action_deprecated(
-                        'fluentform_form_imported',
-                        [
+                    do_action_deprecated('fluentform_form_imported', [
                             $formId
                         ],
                         FLUENTFORM_FRAMEWORK_UPGRADE,

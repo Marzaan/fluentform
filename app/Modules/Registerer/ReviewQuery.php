@@ -37,8 +37,8 @@ class ReviewQuery
         return [
             'name'    => 'review_query',
             'title'   => '',
-            'message' => sprintf('Thank you for using Fluent Forms. We would be very grateful if you could share your experience and leave a review for us in %s',
-                '<a target="_blank" href="https://wordpress.org/support/plugin/fluentform/reviews/#new-post">WordPress.org</a>. Your reviews inspire us to keep improving the plugin and delivering a better user experience.'),
+            'message' => sprintf('Thank you for using Fluent Forms. We would greatly appreciate it if you could share your experience and leave a review for us on %s. Your review inspires us to keep improving the plugin and delivering a better user experience.',
+                '<a target="_blank" href="https://wordpress.org/support/plugin/fluentform/reviews/#new-post">WordPress.org</a>'),
             'links' => [
                 [
                     'href'     => 'https://wordpress.org/support/plugin/fluentform/reviews/#new-post',

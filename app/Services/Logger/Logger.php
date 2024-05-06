@@ -64,6 +64,23 @@ class Logger
             }
 
             $log->component = Helper::getLogInitiator($log->component, $type);
+            $log->integration_enabled = false;
+
+            $notificationKeys = apply_filters('fluentform/global_notification_active_types', [], $log->form_id);
+
+            unset($notificationKeys['user_registration_feeds']);
+            unset($notificationKeys['notifications']);
+
+            $notificationKeys = array_flip($notificationKeys);
+
+            $actionName = $log->getOriginal('component');
+            if ($actionName) {
+                $actionName = str_replace(['fluentform_integration_notify_', 'fluentform/integration_notify_'], '', $actionName);
+
+                if (in_array($actionName, $notificationKeys)) {
+                    $log->integration_enabled = true;
+                }
+            }
         }
 
         $logs->setCollection(Collection::make($logItems));
@@ -106,6 +123,7 @@ class Logger
                 'ff_scheduled_actions.status',
                 'ff_scheduled_actions.note',
                 'ff_scheduled_actions.updated_at',
+                'ff_scheduled_actions.feed_id',
                 'fluentform_forms.title as form_title',
             ];
             $join = 'ff_scheduled_actions.form_id';
@@ -163,7 +181,7 @@ class Logger
                 ->orderBy('id', 'DESC')
                 ->get();
 
-            $log = apply_filters_deprecated(
+            $logs = apply_filters_deprecated(
                 'fluentform_entry_logs',
                 [
                     $logs,

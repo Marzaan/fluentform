@@ -35,9 +35,11 @@ export default {
         }
     },
     mounted() {
-        if ('label' in this.$attrs.editItem.settings && !this.$attrs.editItem.settings.label) {
-          this.show = false;
-          this.$emit('input', '');
+        if (this.$attrs.editItem) {
+            if ('label' in this.$attrs.editItem.settings && !this.$attrs.editItem.settings.label) {
+              this.show = false;
+              this.$emit('input', '');
+            }
         }
     }
 }

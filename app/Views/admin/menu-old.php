@@ -4,7 +4,7 @@
             <div class="menu_logo_holder">
                 <a href="<?php echo esc_url($baseUrl); ?>">
                     <img style="max-height: 40px;" src="<?php echo esc_url($logo); ?>" />
-                    <span>beta</span>
+                    <span><?php _e('beta', 'fluentform'); ?></span>
                 </a>
             </div>
             <div class="fframe_handheld"><span class="dashicons dashicons-menu-alt3"></span></div>

@@ -7,7 +7,7 @@
             v-html="item.settings.button_ui.text"
             :style="btnStyles">
         </button>
-        <img v-else :src="item.settings.button_ui.img_url" alt="Submit Button" style="max-width: 200px;">
+        <img v-else :src="item.settings.button_ui.img_url" :alt="$t('Submit Button')" style="max-width: 200px;">
         <div v-html="extraHtml"></div>
     </div>
 </template>

@@ -313,6 +313,13 @@ $inner-border-color: #ced4da;
         text-align: right;
       }
     }
+
+    @media (max-width: 640px) {
+      .#{$choices-selector}__item {
+        padding: 16px;
+      }
+    }
+
     .#{$choices-selector}__item--selectable {
       @media (min-width: 640px) {
         padding-right: 100px;

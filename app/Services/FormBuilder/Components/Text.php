@@ -50,7 +50,7 @@ class Text extends BaseComponent
                 'jquery-mask',
                 fluentformMix('libs/jquery.mask.min.js'),
                 ['jquery'],
-                false,
+                '1.14.15',
                 true
             );
         }

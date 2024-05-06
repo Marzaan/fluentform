@@ -10,6 +10,9 @@ import pdf_settings from './Pdf.vue';
 import GeneralIntegrationSettings from './GeneralIntegrationSettings.vue';
 import DoubleOptinSettings from './DoubleOptinSettings.vue';
 import ManagersSettings from './ManagersSettings.vue';
+import InventoryManager from './InventoryManager.vue';
+
+
 import License from './License.vue';
 import globalSearch from '../global_search'
 
@@ -107,6 +110,7 @@ new Vue({
         'general-integration-settings': GeneralIntegrationSettings,
         'double_optin_settings': DoubleOptinSettings,
         managers: ManagersSettings,
+        inventory_manager: InventoryManager,
         license: License
 
     },

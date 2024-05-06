@@ -72,7 +72,7 @@
                 <select v-else class="condition-value ff-select ff-select-small">
                     <option value="" disabled selected>{{ $t('Select') }}</option>
                 </select>
-                <action-btn class="ml-1">
+                <action-btn>
                     <action-btn-add @click="conditional_logics.conditions.pushAfter(i, emptyRules)" size="mini"></action-btn-add>
                     <action-btn-remove @click="decreaseLogic(i)" size="mini"></action-btn-remove>
                 </action-btn>

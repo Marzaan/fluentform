@@ -2,6 +2,8 @@
 
 namespace FluentForm\App\Services\Parser;
 
+use FluentForm\App\Helpers\Helper;
+use FluentForm\App\Services\ConditionAssesor;
 use FluentForm\Framework\Helpers\ArrayHelper as Arr;
 
 class Extractor
@@ -90,6 +92,53 @@ class Extractor
             if ($field['element'] === 'container') {
                 foreach ($field['columns'] as $item) {
                     $this->looper($item['fields']);
+                }
+            }
+
+            // Now the field is supposed to be a flat field.
+            // We can extract the desired keys as we want.
+            else {
+                if (in_array($field['element'], $this->inputTypes)) {
+                    $this->extractField($field);
+                }
+            }
+        }
+    }
+
+    /**
+     * The extractor initializer for getting the extracted data.
+     *
+     * @return array
+     */
+    public function extractEssentials($formData)
+    {
+        $this->looperEssential($formData, $this->fields);
+
+        return $this->result;
+    }
+    
+    /**
+     * The recursive looper method to loop each
+     * of the fields and extract it's data.
+     *
+     * @param array $fields
+     */
+    protected function looperEssential($formData, $fields = [])
+    {
+        foreach ($fields as $field) {
+            $field['conditionals'] = Arr::get($field, 'settings.conditional_logics', []);
+
+            $matched = ConditionAssesor::evaluate($field, $formData);
+
+            if (!$matched) {
+                continue;
+            }
+
+            // If the field is a Container (collection of other fields)
+            // then we will recursively call this function to resolve.
+            if ($field['element'] === 'container') {             
+                foreach ($field['columns'] as $item) {
+                    $this->looperEssential($formData, $item['fields']);
                 }
             }
 
@@ -283,10 +332,28 @@ class Extractor
                 'settings.validation_rules'
             );
 
+            $this->handleMaxLengthValidation();
+
             $this->result[$this->attribute]['conditionals'] = Arr::get(
                 $this->field,
                 'settings.conditional_logics'
             );
+        }
+
+        return $this;
+    }
+
+    protected function handleMaxLengthValidation()
+    {
+        $maxLength = Arr::get($this->field, 'attributes.maxlength');
+        $fieldHasMaxValidation = Arr::get($this->field, 'settings.validation_rules.max');
+        $shouldSetMaxValidation = $maxLength && !$fieldHasMaxValidation;
+
+        if ($shouldSetMaxValidation) {
+            $this->result[$this->attribute]['rules']['max'] = [
+                'value'   => $maxLength,
+                "message" => Helper::getGlobalDefaultMessage('max'),
+            ];
         }
 
         return $this;

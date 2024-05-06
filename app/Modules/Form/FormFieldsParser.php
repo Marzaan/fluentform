@@ -18,6 +18,7 @@ use FluentForm\App\Services\Parser\Form as FormParser;
  * @method static boolean    hasRequiredFields(\stdClass $form, array $fields)
  * @method static array      getInputsByElementTypes(\stdClass $form, array $elements, array $with = [])
  * @method static array|null getField(\stdClass $form, string|array $element, string|array $attribute, array $with = [])
+ * @method static array      getEssentialInputs(\stdClass $form, array $inputs, array $with)
  */
 class FormFieldsParser
 {

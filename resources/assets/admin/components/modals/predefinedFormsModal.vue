@@ -28,7 +28,7 @@
             <div class="form_action_navigations">
                 <div class="form_item_group">
                     <label>{{ $t('Category') }}</label>
-                    <el-select size="mini" v-model="category" clearable placeholder="All Category">
+                    <el-select size="mini" v-model="category" clearable :placeholder="$t('All Category')">
                         <el-option
                             v-for="item in categories"
                             :key="item"
@@ -73,7 +73,7 @@
                                 <div class="text-center mtb10">
                                     <el-button size="small">
                                         <template v-if="creatingForm">
-                                            <span>Creating Form...</span>
+                                            <span>{{ $t('Creating Form...') }}</span>
                                         </template>
                                         <template v-else>
                                             <span v-if="form.is_pro && !has_pro">Unlock in Pro</span>

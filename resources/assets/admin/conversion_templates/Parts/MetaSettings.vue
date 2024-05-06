@@ -23,7 +23,7 @@
                         <el-input v-model="meta_settings.share_key" type="text" :max-length="20"
                                   :placeholder="$t('Security Code')"/>
                         <p class="text-note mt-2">
-                            {{ $t('A Salt to secure your share url so nobody can guess by form ID.') }}</p>
+                            {{ $t('Add a Security Code to make your shareable URL extra secure.') }}</p>
                     </el-form-item>
                     <h5>{{ $t('Form Messages') }}</h5>
                     <el-row :gutter="30">
@@ -88,7 +88,7 @@
                                         :placeholder="$t('Enter Key hint tooltip')"
                                 />
                             </el-form-item>
-                            <el-form-item :label="$t('File Upload Size Limit Text')">
+                            <el-form-item class="ff-form-item" :label="$t('File Upload Size Limit Text')">
                                 <el-input
                                         v-model="meta_settings.i18n.limit"
                                         type="text"

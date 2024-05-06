@@ -25,7 +25,7 @@
                     </card-head>
                     <card-body>
                         <el-form-item class="ff-form-item">
-                            <el-checkbox true-label="yes" false-label="no" v-model="settings.enabled">
+                            <el-checkbox :true-label="$t('yes')" :false-label="$t('no')" v-model="settings.enabled">
                                 {{ $t('Enable Double Optin Module') }}
                             </el-checkbox>
                         </el-form-item>
@@ -65,7 +65,7 @@
                                 <wp-editor v-else :height="250"
                                         v-model="settings.email_body"/>
 
-                                <el-checkbox class="mt-3 mb-2" true-label="yes" false-label="no" v-model="settings.asPlainText">
+                                <el-checkbox class="mt-3 mb-2" :true-label="$t('yes')" :false-label="$t('no')" v-model="settings.asPlainText">
                                     {{ $t('Send Email as RAW HTML Format') }}
                                 </el-checkbox>
 
@@ -139,7 +139,7 @@
                             </el-form-item>
 
                             <el-form-item class="ff-form-item">
-                                <el-checkbox true-label="yes" false-label="no" v-model="settings.auto_delete_status">
+                                <el-checkbox :true-label="$t('yes')" :false-label="$t('no')" v-model="settings.auto_delete_status">
                                     {{ $t('Automatically delete unconfirmed entries if not confirmed in certain days') }}
                                 </el-checkbox>
                             </el-form-item>

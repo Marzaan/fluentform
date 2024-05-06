@@ -21,6 +21,14 @@
                 listOpt[prop] = fieldOptionsDictionary[prop];
             }
         });
+
+		// For maintain field options order
+		// Remove field option, if options exist on extras options
+	    for (const prop in obj) {
+		    if (prop in listOpt) {
+			    delete listOpt[prop];
+		    }
+	    }
         return {...listOpt, ...obj};
     };
 

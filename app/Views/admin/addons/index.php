@@ -13,14 +13,14 @@ do_action('fluentform/global_menu'); ?>
         <?php if(!$hasPro){ ?>
             <div class="ff_card ff_card_alert mb-4 el-row justify-between items-center">
                 <div class="el-col el-col-12">
-                    <h5 class='title mb-2'>You are using the free version of Fluent Forms.</h5>
+                    <h5 class='title mb-2'><?php _e('You are using the free version of Fluent Forms.', 'fluentform'); ?></h5>
                     <p class='text'>
-                        Upgrade to get access to all the advanced features.
+                        <?php _e('Upgrade to get access to all the advanced features.', 'fluentform'); ?>
                     </p>
                 </div>
                 <div class="el-col el-col-12 text-right">
                     <a target="_blank" href="https://fluentforms.com/pricing/?utm_source=plugin&utm_medium=wp_install&utm_campaign=ff_upgrade&theme_style=twentytwentythree" class="el-button el-button--danger">
-                        Upgrade to Pro
+                        <?php _e('Upgrade to Pro', 'fluentform'); ?>
                     </a>
                 </div>
             </div>
@@ -30,7 +30,7 @@ do_action('fluentform/global_menu'); ?>
             <ul class="ff_tab mb-5">
                 <li class="ff_tab_item <?php echo ($current_menu_item == 'fluentform_add_ons') ? 'active' : ''; ?>">
                     <a class="ff_tab_link" href="<?php echo esc_url($base_url); ?>">
-                        Modules
+                        <?php _e('Modules', 'fluentform'); ?>
                     </a>
                 </li>
                 <?php foreach ($menus as $menu_index => $menu_title): ?>

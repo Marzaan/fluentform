@@ -64,9 +64,17 @@ const formConditional = function ($, $theForm, form) {
                     $parent.removeClass('ff_excluded')
                         .addClass('ff_cond_v')
                         .slideDown(200);
+
+                    $parent.siblings('.step-nav')
+                        .removeClass('has-conditions')
+                        .slideDown(200);
                 } else {
                     $parent.removeClass('ff_cond_v')
                         .addClass('ff_excluded')
+                        .slideUp(200);
+
+                    $parent.siblings('.step-nav')
+                        .addClass('has-conditions')
                         .slideUp(200);
                 }
             });

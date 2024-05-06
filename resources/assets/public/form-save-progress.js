@@ -22,128 +22,130 @@ import formSlider from "./Pro/slider";
             });
         }
 
-        $(formSelector).on('click', '.ff-btn-save-progress', function (e) {
-            e.preventDefault();
-            let $saveBttn = $(this);
-            $saveBttn.addClass('ff-working');
+        $(formSelector).find('.ff-btn-save-progress').each(function (key, el) {
+            const $saveBttn = $(el);
 
-            const $inputs = $theForm.find(':input').filter(function (i, el) {
-                return !$(el).closest('.has-conditions').hasClass('ff_excluded');
-            });
+            $saveBttn.on('click', function (e) {
+                e.preventDefault();
+                $saveBttn.addClass('ff-working');
 
-            $inputs.filter((i, el) => {
-                let $el = $(el);
-                return $el.parents().hasClass('ff_repeater_table') &&
-                    $el.attr('type') == 'select' &&
-                    !$el.val();
-            }).prepend('<option selected disabled />');
-
-            let inputData = $inputs.serialize();
-
-            var hasFiles = false;
-            $.each($theForm.find('[type=file]'), function (index, fileInput) {
-                var params = {}, fileInputName = fileInput.name + '[]';
-                params[fileInputName] = [];
-
-                $(fileInput)
-                    .closest('div')
-                    .find('.ff-uploaded-list')
-                    .find('.ff-upload-preview[data-src]')
-                    .each(function (i, div) {
-                        params[fileInputName][i] = $(this).data('src');
-                    });
-
-                $.each(params, function (k, v) {
-                    if (v.length) {
-                        var obj = {};
-                        obj[k] = v;
-                        inputData += '&' + $.param(obj);
-                        hasFiles = true;
-                    }
+                const $inputs = $theForm.find(':input').filter(function (i, el) {
+                    return !$(el).closest('.has-conditions').hasClass('ff_excluded');
                 });
-            });
 
-            var formData = {
-                source_url: window.form_state_save_vars.source_url,
-                action: 'fluentform_save_form_progress_with_link',
-                data: inputData,
-                form_id: $theForm.data('form_id'),
-                hash: hash,
-                active_step: activeStep,
-                nonce: window.form_state_save_vars.nonce
-            };
-            const saveProgressMessage = formData.form_id + '_save_progress_msg';
-            const savingResponseMsg = '#' + saveProgressMessage;
-            jQuery.post(fluentFormVars.ajaxUrl, formData).then(data => {
-                if (data) {
-                    hash = data.data.hash;
-                    const $linkDom = $theForm.find('.ff-saved-state-link');
-                    if ($linkDom.length) {
-                        $linkDom.find('input').val(data.data.saved_url);
-                        return;
-                    }
-                    if (data.data?.message != '') {
-                        if ($(savingResponseMsg).length) {
-                            $(savingResponseMsg).slideUp('fast');
+                $inputs.filter((i, el) => {
+                    let $el = $(el);
+                    return $el.parents().hasClass('ff_repeater_table') &&
+                        $el.attr('type') == 'select' &&
+                        !$el.val();
+                }).prepend('<option selected disabled />');
+
+                let inputData = $inputs.serialize();
+
+                var hasFiles = false;
+                $.each($theForm.find('[type=file]'), function (index, fileInput) {
+                    var params = {}, fileInputName = fileInput.name + '[]';
+                    params[fileInputName] = [];
+
+                    $(fileInput)
+                        .closest('div')
+                        .find('.ff-uploaded-list')
+                        .find('.ff-upload-preview[data-src]')
+                        .each(function (i, div) {
+                            params[fileInputName][i] = $(this).data('src');
+                        });
+
+                    $.each(params, function (k, v) {
+                        if (v.length) {
+                            var obj = {};
+                            obj[k] = v;
+                            inputData += '&' + $.param(obj);
+                            hasFiles = true;
                         }
-                        $('<div/>', {
-                            'id': saveProgressMessage,
-                            'class': 'ff-message-success ff-el-group'
-                        })
-                            .html(data.data.message)
-                            .insertBefore($saveBttn.closest('.ff-el-group'));
-                    }
+                    });
+                });
 
+                var formData = {
+                    source_url: window.form_state_save_vars.source_url,
+                    action: 'fluentform_save_form_progress_with_link',
+                    data: inputData,
+                    form_id: $theForm.data('form_id'),
+                    hash: hash,
+                    active_step: activeStep,
+                    nonce: window.form_state_save_vars.nonce
+                };
+                const saveProgressMessage = formData.form_id + '_save_progress_msg';
+                const savingResponseMsg = '#' + saveProgressMessage;
+                jQuery.post(fluentFormVars.ajaxUrl, formData).then(data => {
+                    if (data) {
+                        hash = data.data.hash;
+                        const $linkDom = $theForm.find('.ff-saved-state-link');
+                        if (data.data?.message != '') {
+                            if ($(savingResponseMsg).length) {
+                                $(savingResponseMsg).slideUp('fast');
+                            }
+                            $('<div/>', {
+                                'id': saveProgressMessage,
+                                'class': 'ff-message-success ff-el-group'
+                            })
+                                .html(data.data.message)
+                                .insertBefore($saveBttn.closest('.ff-el-group'));
+                        }
 
+                        //Show Link in Input
+                        const copyIcon = window.form_state_save_vars.copy_button || 'Copy';
+                        let inputDiv =
+                            `<div class="ff-el-input--content">
+                                <div class="ff_input-group">
+                                    <input readonly value="${ data.data.saved_url }" class="ff-el-form-control" >
+                                    <div class="ff_input-group-append">
+                                        <button class="ff-btn ff-btn-md ff_btn_style ff_btn_copy_link ff_input-group-text">${copyIcon}</button>
+                                    </div>
+                                </div>
+                            </div>`;
+                        let inputGroup = $('<div/>', { class: 'ff-el-group ff-saved-state-input ff-saved-state-link ff-hide-group', html: inputDiv });
 
-
-                    //Show Link in Input
-                    const copyIcon = window.form_state_save_vars.copy_button || 'Copy';
-                    let inputDiv = `<div class="ff-el-input--content"><div class="ff_input-group"><input readonly value="${ data.data.saved_url }" class="ff-el-form-control" >
-                    <div class="ff_input-group-append">
-                    <button class="ff-btn ff-btn-md ff_btn_style ff_btn_copy_link ff_input-group-text">
-                        ${copyIcon}
-                    </button></div></div></div>`;
-                    let inputGroup = $('<div/>', { class: 'ff-el-group ff-saved-state-input ff-saved-state-link ff-hide-group', html: inputDiv });
-
-                    $(this).closest('.ff-el-group').after(
-                        inputGroup
-                    )
-                    inputGroup.fadeIn();
-
-                    //Show Email Input
-                    const emailPlaceholderStr = window.form_state_save_vars.email_placeholder_str || 'Your Email Here';
-                    const emailIcon = window.form_state_save_vars.email_button || 'Email';
-                    if ($(this).hasClass('ff_resume_email_enabled')) {
-                        let emailDiv = `<div class="ff-el-input--content"><div class="ff_input-group"><input type="email" class="ff-el-form-control" placeholder="${emailPlaceholderStr}" class="ff-el-form-control">
-                        <div class="ff_input-group-append">
-                        <button class="ff-btn ff-btn-md ff_btn_style ff_btn_is_email ff_input-group-text">
-                             ${emailIcon}
-                        </button></div></div></div>`;
-                        let emailGroup = $('<div/>', { class: 'ff-el-group ff-saved-state-input  ff-email-address ff-hide-group', html: emailDiv });
-
-                        $(inputGroup).after(
-                            emailGroup
+                        $(this).closest('.ff-el-group').after(
+                            inputGroup
                         )
-                        emailGroup.fadeIn();
+                        inputGroup.fadeIn();
 
+                        //Show Email Input
+                        const emailPlaceholderStr = window.form_state_save_vars.email_placeholder_str || 'Your Email Here';
+                        const emailIcon = window.form_state_save_vars.email_button || 'Email';
+                        if ($(this).hasClass('ff_resume_email_enabled')) {
+                            let emailDiv =
+                                `<div class="ff-el-input--content">
+                                    <div class="ff_input-group">
+                                        <input type="email" class="ff-el-form-control" placeholder="${emailPlaceholderStr}" class="ff-el-form-control">
+                                        <div class="ff_input-group-append">
+                                            <button class="ff-btn ff-btn-md ff_btn_style ff_btn_is_email ff_input-group-text">${emailIcon}</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            let emailGroup = $('<div/>', { class: 'ff-el-group ff-saved-state-input  ff-email-address ff-hide-group', html: emailDiv });
 
+                            $(inputGroup).after(
+                                emailGroup
+                            )
+                            emailGroup.fadeIn();
+                        }
                     }
-                }
-            }).fail(error => {
-                if ($(savingResponseMsg).length) {
-                    $(savingResponseMsg).slideUp('fast');
-                }
-                $('<div/>', {
-                    'id': saveProgressMessage,
-                    'class': 'ff-message-success ff-el-group text-danger'
-                })
-                    .html(error.responseJSON.data.message)
-                    .insertBefore($saveBttn.closest('.ff-el-group'));
+                }).fail(error => {
+                    if ($(savingResponseMsg).length) {
+                        $(savingResponseMsg).slideUp('fast');
+                    }
+                    $('<div/>', {
+                        'id': saveProgressMessage,
+                        'class': 'ff-message-success ff-el-group text-danger'
+                    })
+                        .html(error.responseJSON.data.message)
+                        .insertBefore($saveBttn.closest('.ff-el-group'));
 
-            })
-                .always(function () {
-                $saveBttn.parent().hide();
+                })
+                    .always(function () {
+                        $saveBttn.parent().hide();
+                    });
             });
         });
 

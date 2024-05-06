@@ -345,7 +345,7 @@ class FormHandler
                 $form,
                 $isUrlParser
             );
-
+            
             if ($isUrlParser) {
                 /*
                  * For Empty Redirect Value
@@ -378,9 +378,10 @@ class FormHandler
                 false,
                 true
             );
-
+    
+            $redirectUrl = wp_sanitize_redirect(urldecode($redirectUrl));
             $returnData = [
-                'redirectUrl' => wp_sanitize_redirect(urldecode($redirectUrl)),
+                'redirectUrl' => esc_url_raw($redirectUrl),
                 'message'     => $message,
             ];
         }

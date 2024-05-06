@@ -37,10 +37,15 @@
       transition: 0.2s;
       box-shadow: 0 1px 3px 0 #d4d9e1;
 
-      &:focus {
+      &.active-search-link {
         background-color: #197efb;
         color: #ffffff;
         outline: 0;
+      }
+      &:focus,&:focus-visible {
+        outline: 0;
+        border: 0;
+        box-shadow: none;
       }
     }
 

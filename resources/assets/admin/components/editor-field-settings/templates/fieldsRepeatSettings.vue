@@ -23,7 +23,7 @@
                         <div class="el-form-item__content">
                             <el-select class="w-100" @change="changeFieldType(field, i)" v-model="field.element">
                                 <el-option v-for="(element,elementName) in available_elements" :key="elementName"
-                                           :value="elementName" :label="element"></el-option>
+                                           :value="elementName" :label="$t(element)"></el-option>
                             </el-select>
                         </div>
                     </div>

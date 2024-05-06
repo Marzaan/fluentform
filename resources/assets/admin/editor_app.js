@@ -301,7 +301,16 @@ window.fluentFormEditorApp = new Vue({
 
         saveHash() {
             this.dropzoneHash = JSON.stringify(this.form.dropzone);
-        }
+        },
+
+        $t(str) {
+            let transString = window.FluentFormApp.form_editor_str[str];
+            if(transString) {
+                return transString;
+            }
+            return str;
+        },
+
     },
 
     beforeCreate() {

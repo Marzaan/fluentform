@@ -26,7 +26,7 @@ class ReportService
             throw new \Exception("The form couldn't be found.");
         }
 
-        $statuses = Arr::get($attr, 'statuses', []);
+        $statuses = Arr::get($attr, 'statuses', ['read', 'unread', 'unapproved', 'approved', 'declined', 'unconfirmed', 'confirmed']);
         return ReportHelper::generateReport($form, $statuses);
     }
 

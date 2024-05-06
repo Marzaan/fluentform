@@ -159,10 +159,11 @@ class GlobalSettingsHelper
 
         // Prepare captcha data.
         $captchaData = [
-            'siteKey'   => Arr::get($data, 'siteKey'),
-            'secretKey' => $secretKey,
-            'invisible' => Arr::get($data, 'invisible', 'no'),
-            'theme'     => Arr::get($data, 'theme', 'auto')
+            'siteKey'    => Arr::get($data, 'siteKey'),
+            'secretKey'  => $secretKey,
+            'invisible'  => 'no',
+            'appearance' => Arr::get($data, 'appearance', 'always'),
+            'theme'      => Arr::get($data, 'theme', 'auto')
         ];
 
         // If token is not empty meaning user verified their captcha.

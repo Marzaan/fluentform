@@ -6,7 +6,7 @@
             <elLabel v-if="isMultiCol" slot="label" :label="field.settings.label"></elLabel>
             <el-input v-if="field.element != 'select'" :value="field.attributes.value" :placeholder="field.attributes.placeholder"></el-input>
             <div v-else>
-                <el-select :placeholder="field.attributes.placeholder"></el-select>
+                <el-select :placeholder="field.attributes.placeholder" :value="field.attributes.value"></el-select>
             </div>
         </el-form-item>
     </div>

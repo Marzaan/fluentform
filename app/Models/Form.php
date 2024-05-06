@@ -178,7 +178,9 @@ class Form extends Model
                 'cssClassName'          => '',
                 'asteriskPlacement'     => 'asterisk-right',
             ],
-            'delete_entry_on_submission' => 'no',
+            'delete_entry_on_submission'         => 'no',
+            'conv_form_per_step_save'            => false,
+            'conv_form_resume_from_last_step'    => false
         ];
 
         if ($formId) {

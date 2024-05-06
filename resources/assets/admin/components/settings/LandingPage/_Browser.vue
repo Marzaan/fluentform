@@ -24,8 +24,8 @@
                         active-value="desktop"
                         inactive-value="mobile"
                         @change="toggleDevice"
-                        active-text="Desktop"
-                        inactive-text="Mobile">
+                        :active-text="$t('Desktop')"
+                        :inactive-text="$t('Mobile')">
                 </el-switch>
             </div>
         </div>

@@ -5,6 +5,7 @@ namespace FluentForm\App\Services\FluentConversational\Classes\Converter;
 use FluentForm\Framework\Helpers\ArrayHelper;
 use FluentForm\App\Modules\Component\Component;
 use FluentForm\App\Services\FormBuilder\Components\DateTime;
+use FluentForm\App\Modules\Form\FormFieldsParser;
 
 class Converter
 {
@@ -16,6 +17,7 @@ class Converter
 
         $form->reCaptcha = false;
         $form->hCaptcha = false;
+        $form->turnstile = false;
         $form->hasCalculation = false;
 
         $questions = [];
@@ -24,9 +26,17 @@ class Converter
 
         $allowedFields = static::fieldTypes();
 
+        $hasSaveAndResume = static::hasSaveAndResume($form);
+        $saveAndResumeData = [];
+
+        if ($hasSaveAndResume && ArrayHelper::get($form->settings, 'conv_form_per_step_save')) {
+            $saveAndResumeData = static::getSaveAndResumeData($form);
+
+            $form->stepCompleted = intval(ArrayHelper::get($saveAndResumeData, 'step_completed', 0));
+        }
+
         foreach ($fields as $field) {
-            $field = apply_filters_deprecated(
-                'fluentform_rendering_field_data_' . $field['element'],
+            $field = apply_filters_deprecated('fluentform_rendering_field_data_' . $field['element'],
                 [
                     $field,
                     $form
@@ -75,10 +85,33 @@ class Converter
                 'conditional_logics'   => self::parseConditionalLogic($field),
                 'calculation_settings' => ArrayHelper::get($field, 'settings.calculation_settings'),
                 'is_calculable'        => ArrayHelper::get($field, 'settings.calc_value_status', false),
+                'has_save_and_resume'  => $hasSaveAndResume
             ];
 
-            if ($answer = self::setDefaultValue(ArrayHelper::get($field, 'attributes.value'), $field, $form)) {
+            if (!$hasSaveAndResume && $answer = self::setDefaultValue(ArrayHelper::get($field, 'attributes.value'), $field, $form)) {
                 $question['answer'] = $answer;
+            }
+
+            if ($hasSaveAndResume && $saveAndResumeData) {
+                $response = ArrayHelper::get($saveAndResumeData, 'response');
+                $questionId = ArrayHelper::get($question, 'id');
+                $value = ArrayHelper::get($response, $questionId);
+
+                if (isset($value)) {
+                    if (ArrayHelper::get($field, 'element') == 'input_file') {
+                        $files = ArrayHelper::get($response, $questionId);
+                        foreach ($files as $file) {
+                            $question['answer'][] = ArrayHelper::get($file, 'data_src');
+                        }
+                    } elseif (
+                        ArrayHelper::get($field, 'element') == 'rangeslider' ||
+                        ArrayHelper::get($field, 'element') == 'subscription_payment_component'
+                    ) {
+                        $question['answer'] = +$value;
+                    } else {
+                        $question['answer'] = $value;
+                    }
+                }
             }
 
             if ('default' != ArrayHelper::get($question, 'style_pref.layout')) {
@@ -152,6 +185,31 @@ class Converter
                             $question['required'] = true;
                         }
 
+                        if (!$hasSaveAndResume && $defaultValue = self::setDefaultValue(ArrayHelper::get($item, 'attributes.value'), $item, $form)) {
+                            $item['attributes']['value'] = $defaultValue;
+                        }
+                        $question['fields'][] = wp_parse_args($itemQuestion, $item);
+                    }
+                }
+            } elseif ('input_name' === $field['element']) {
+                foreach ($field['fields'] as $item) {
+                    if ($item['settings']['visible']) {
+                        $itemQuestion = [
+                            'title'           => ArrayHelper::get($item, 'settings.label'),
+                            'container_class' => ArrayHelper::get($item, 'settings.container_class'),
+                            'required'        => ArrayHelper::get($item, 'settings.validation_rules.required.value'),
+                            'requiredMsg'     => ArrayHelper::get($item, 'settings.validation_rules.required.message'),
+                            'errorMessage'    => ArrayHelper::get($item, 'settings.validation_rules.required.message'),
+                            'validationRules' => ArrayHelper::get($item, 'settings.validation_rules'),
+                            'conditional_logics'   => self::parseConditionalLogic($item),
+                        ];
+                        if ($itemQuestion['required']) {
+                            $question['requiredFields'][] = [
+                                "name"         => ArrayHelper::get($item, 'attributes.name', ''),
+                                'requiredMessage'  => ArrayHelper::get($item, 'settings.validation_rules.required.message')
+                            ];
+                            $question['required'] = true;
+                        }
                         if ($defaultValue = self::setDefaultValue(ArrayHelper::get($item, 'attributes.value'), $item, $form)) {
                             $item['attributes']['value'] = $defaultValue;
                         }
@@ -343,10 +401,12 @@ class Converter
 
                 $question['requiredPerRow'] = ArrayHelper::get($field, 'settings.validation_rules.required.per_row');
             } elseif ('rangeslider' === $field['element']) {
-                if ($field['attributes']['value'] == '') {
-                    $question['answer'] = 0;
-                } else {
-                    $question['answer'] = +$field['attributes']['value'];
+                if (!ArrayHelper::exists($question, 'answer')) {
+                    if ($field['attributes']['value'] == '') {
+                        $question['answer'] = 0;
+                    } else {
+                        $question['answer'] = +$field['attributes']['value'];
+                    }
                 }
 
                 $question['min'] = intval($field['attributes']['min']);
@@ -360,6 +420,29 @@ class Converter
 
                 $question['is_calculable'] = true;
                 $question['type'] = 'FlowFormRangesliderType';
+            } elseif ('save_progress_button' === $field['element']) {
+                $question['id'] = 'save_and_resume-' . ArrayHelper::get($field, 'uniqElKey');
+                $question['name'] = ArrayHelper::get($field, 'uniqElKey');
+                $question['title'] = ArrayHelper::get($field, 'editor_options.title');
+                $question['settings'] = ArrayHelper::get($field, 'settings');
+
+                $vars = apply_filters('fluentform/save_progress_vars', [
+                    'ajaxurl'                   => admin_url('admin-ajax.php'),
+                    'sourceurl'                 => home_url($_SERVER['REQUEST_URI']),
+                    'form_id'                   => $form->id,
+                    'nonce'                     => wp_create_nonce(),
+                    'copy_button'               => fluentFormMix('img/copy.svg'),
+                    'copy_success_button'       => fluentFormMix('img/check.svg'),
+                    'email_button'              => fluentFormMix('img/email.svg'),
+                    'email_placeholder_str'     => __('Your Email Here', 'fluentformpro'),
+                    'email_resume_link_enabled' => false
+                ]);
+
+                if (ArrayHelper::get($field, 'settings.email_resume_link_enabled')) {
+                    $vars['email_resume_link_enabled'] = true;
+                }
+
+                wp_localize_script('fluent_forms_conversational_form', 'form_state_save_vars', $vars);
             } elseif ('multi_payment_component' === $field['element']) {
                 $type = $field['attributes']['type'];
 
@@ -381,7 +464,7 @@ class Converter
                         $question['type'] = 'FlowFormDropdownType';
                     }
 
-                    $question['options'] = $field['settings']['pricing_options'];
+                    $question['options'] = ArrayHelper::get($field, 'settings.pricing_options');
                 }
 
                 $question['is_payment_field'] = true;
@@ -389,7 +472,10 @@ class Converter
             } elseif ('subscription_payment_component' === $field['element']) {
                 $question['is_payment_field'] = true;
                 $question['is_subscription_field'] = true;
-                $question['answer'] = null;
+
+                if (!$hasSaveAndResume) {
+                    $question['answer'] = null;
+                }
 
                 $type = $field['attributes']['type'];
                 $question['subscriptionFieldType'] = $type;
@@ -420,13 +506,20 @@ class Converter
 
                     $option['sub'] = strip_tags($paymentSummaryText);
 
-                    if ('yes' == $option['is_default']) {
+                    if ('yes' == $option['is_default'] && !$hasSaveAndResume) {
                         $question['answer'] = $index;
                     }
 
                     if ($hasCustomPayment) {
                         $option['customInput'] = $question['name'] . '_custom_' . $index;
-                        $question['customPayment'] = $option['subscription_amount'];
+
+                        if ($hasSaveAndResume && $saveAndResumeData) {
+                            if ($customPayment = ArrayHelper::get($saveAndResumeData, 'response.' . $option['customInput'])) {
+                                $question['customPayment'] = $customPayment;
+                            }
+                        } else {
+                            $question['customPayment'] = $option['subscription_amount'];
+                        }
                     }
                 }
 
@@ -508,7 +601,7 @@ class Converter
                     }
                 }
             } elseif ('payment_summary_component' === $field['element']) {
-                $question['title'] = 'Payment Summary';
+                $question['title'] = __('Payment Summary', 'fluentform');
                 $question['emptyText'] = $field['settings']['cart_empty_text'];
             } elseif ('recaptcha' === $field['element']) {
                 $reCaptchaConfig = get_option('_fluentform_reCaptcha_details');
@@ -568,6 +661,37 @@ class Converter
                     FLUENTFORM_VERSION,
                     true
                 );
+            } elseif ('turnstile' === $field['element']) {
+                $turnstileConfig = get_option('_fluentform_turnstile_details');
+                $siteKey = ArrayHelper::get($turnstileConfig, 'siteKey');
+                $appearance = ArrayHelper::get($turnstileConfig, 'appearance', 'always');
+                $theme = ArrayHelper::get($turnstileConfig, 'theme', 'auto');
+
+                if (! $siteKey) {
+                    continue;
+                }
+
+                $question['siteKey'] = $siteKey;
+                $question['appearance'] = $appearance;
+                $question['theme'] = $theme;
+
+                $form->turnstile = [
+                    'siteKey' => $siteKey,
+                ];
+
+                wp_enqueue_script(
+                    'turnstile_conv',
+                    'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',
+                    [],
+                    FLUENTFORM_VERSION,
+                    false
+                );
+            } elseif ('payment_coupon' === $field['element']) {
+                if ($hasSaveAndResume && $saveAndResumeData) {
+                    if ($coupons = ArrayHelper::get($saveAndResumeData, 'response.__ff_all_applied_coupons')) {
+                        $question['answer'] = json_decode($coupons);
+                    }
+                }
             }
 
             do_action('fluentform/conversational_question', $question, $field, $form);
@@ -594,6 +718,12 @@ class Converter
 
         if (is_array($fields) && ! empty($fields)) {
             foreach ($fields as $field) {
+                $element = ArrayHelper::get($field, 'element');
+                $allowedFields = array_keys(static::fieldTypes());
+                if (!in_array($element, $allowedFields)) {
+                    continue;
+                }
+                
                 if (! ArrayHelper::exists($field, 'style_pref')) {
                     $field['style_pref'] = [
                         'layout'           => 'default',
@@ -636,7 +766,9 @@ class Converter
             'MultiplePictureChoice' => 'FlowFormMultiplePictureChoiceType',
             'recaptcha'             => 'FlowFormReCaptchaType',
             'hcaptcha'              => 'FlowFormHCaptchaType',
+            'turnstile'             => 'FlowFormTurnstileType',
             'address'               => 'FlowFormAddressType',
+            'input_name'            => 'FlowFormNameType',
             'ffc_custom'            => 'FlowFormCustomType',
         ];
 
@@ -655,6 +787,7 @@ class Converter
             $fieldTypes['payment_coupon'] = 'FlowFormCouponType';
             $fieldTypes['quiz_score'] = 'FlowFormHiddenType';
             $fieldTypes['rangeslider'] = 'FlowFormRangesliderType';
+            $fieldTypes['save_progress_button'] = 'FlowFormSaveAndResumeType';
         }
 
         return apply_filters('fluentform/conversational_field_types', $fieldTypes);
@@ -878,5 +1011,83 @@ class Converter
             ArrayHelper::get($question, 'calculation_settings.status')
             && ArrayHelper::get($question, 'calculation_settings.formula')
         );
+    }
+
+    private static function hasSaveAndResume($form)
+    {
+        if(!defined('FLUENTFORMPRO')){
+            return false;
+        }
+        if(!version_compare(FLUENTFORMPRO_VERSION,'5.1.13' ,'>=')){
+            return false;
+        }
+        $saveAndResume = false;
+        $hash = '';
+        $form->save_state = false;
+
+        $key = isset($_GET['fluent_state']) ? sanitize_text_field($_GET['fluent_state']) : false;
+
+        if ($key) {
+            $hash = base64_decode($key);
+            $form->save_state = true;
+        } else {
+            $cookieName = 'fluentform_step_form_hash_' . $form->id;
+            $hash = ArrayHelper::get($_COOKIE, $cookieName, wp_generate_uuid4());
+        }
+
+        $draftForm = wpFluent()->table('fluentform_draft_submissions')->where('hash', $hash)->first();
+        
+        if ($draftForm) {
+            $saveAndResume = true;
+        }
+
+        return $saveAndResume;
+    }
+
+    private static function getSaveAndResumeData($form)
+    {
+        $draftForm = null;
+        $data = null;
+        $formId = $form->id;
+        $cookieName = 'fluentform_step_form_hash_' . $formId;
+        $hash = ArrayHelper::get($_COOKIE, $cookieName, wp_generate_uuid4());
+
+        if ($hash) {
+            $draftForm = wpFluent()->table('fluentform_draft_submissions')
+                                   ->where('hash', $hash)
+                                   ->where('form_id', $formId)
+                                   ->first();
+        } elseif (!$draftForm && $userId = get_current_user_id()) {
+            $draftForm = wpFluent()->table('fluentform_draft_submissions')
+                                   ->where('user_id', $userId)
+                                   ->where('form_id', $formId)
+                                   ->first();
+        } else {
+            return $data;
+        }
+
+        if ($draftForm) {
+            $data['step_completed'] = (int)$draftForm->step_completed;
+            $data['response'] = json_decode($draftForm->response, true);
+
+            $fields = FormFieldsParser::getInputsByElementTypes($form, ['input_file', 'input_image']);
+            foreach ($fields as $name => $field) {
+                if ($urls = ArrayHelper::get($data['response'], $name)) {
+                    foreach ($urls as $index => $url) {
+                        $data['response'][$name][$index] = [
+                            "data_src" => $url,
+                            "url"      => \FluentForm\App\Helpers\Helper::maybeDecryptUrl($url)
+                        ];
+                    }
+                }
+            }
+            unset(
+                $data['response']['_wp_http_referer'],
+                $data['response']['__fluent_form_embded_post_id'],
+                $data['response']['_fluentform_' . $draftForm->form_id . '_fluentformnonce']
+            );
+        }
+
+        return $data;
     }
 }

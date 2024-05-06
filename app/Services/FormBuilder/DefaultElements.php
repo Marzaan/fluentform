@@ -13,7 +13,6 @@ $defaultElements = [
                 'container_class'    => '',
                 'admin_field_label'  => 'Name',
                 'conditional_logics' => [],
-                'label_placement'    => 'top',
             ],
             'fields' => [
                 'first_name' => [
@@ -32,6 +31,33 @@ $defaultElements = [
                         'label'            => __('First Name', 'fluentform'),
                         'help_message'     => '',
                         'visible'          => true,
+                        'label_placement'   => 'top',
+                        'label_placement_options'   => [
+                            [
+                                'value' => '',
+                                'label' => __('Default', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'top',
+                                'label' => __('Top', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'right',
+                                'label' => __('Right', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'bottom',
+                                'label' => __('Bottom', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'left',
+                                'label' => __('Left', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'hide_label',
+                                'label' => __('Hidden', 'fluentform'),
+                            ],
+                        ],
                         'validation_rules' => [
                             'required' => [
                                 'value'   => false,
@@ -63,6 +89,33 @@ $defaultElements = [
                         'label'            => __('Middle Name', 'fluentform'),
                         'help_message'     => '',
                         'error_message'    => '',
+                        'label_placement'   => 'top',
+                        'label_placement_options'   => [
+                            [
+                                'value' => '',
+                                'label' => __('Default', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'top',
+                                'label' => __('Top', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'right',
+                                'label' => __('Right', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'bottom',
+                                'label' => __('Bottom', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'left',
+                                'label' => __('Left', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'hide_label',
+                                'label' => __('Hidden', 'fluentform'),
+                            ],
+                        ],
                         'visible'          => false,
                         'validation_rules' => [
                             'required' => [
@@ -95,6 +148,33 @@ $defaultElements = [
                         'label'            => __('Last Name', 'fluentform'),
                         'help_message'     => '',
                         'error_message'    => '',
+                        'label_placement'   => 'top',
+                        'label_placement_options'   => [
+                            [
+                                'value' => '',
+                                'label' => __('Default', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'top',
+                                'label' => __('Top', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'right',
+                                'label' => __('Right', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'bottom',
+                                'label' => __('Bottom', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'left',
+                                'label' => __('Left', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'hide_label',
+                                'label' => __('Hidden', 'fluentform'),
+                            ],
+                        ],
                         'visible'          => true,
                         'validation_rules' => [
                             'required' => [
@@ -308,6 +388,33 @@ $defaultElements = [
                     'settings' => [
                         'container_class'   => '',
                         'label'             => __('Address Line 1', 'fluentform'),
+                        'label_placement'   => '',
+                        'label_placement_options'   => [
+                            [
+                                'value' => '',
+                                'label' => __('Default', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'top',
+                                'label' => __('Top', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'right',
+                                'label' => __('Right', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'bottom',
+                                'label' => __('Bottom', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'left',
+                                'label' => __('Left', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'hide_label',
+                                'label' => __('Hidden', 'fluentform'),
+                            ],
+                        ],
                         'admin_field_label' => '',
                         'help_message'      => '',
                         'visible'           => true,
@@ -338,6 +445,33 @@ $defaultElements = [
                     'settings' => [
                         'container_class'   => '',
                         'label'             => __('Address Line 2', 'fluentform'),
+                        'label_placement'   => '',
+                        'label_placement_options'   => [
+                            [
+                                'value' => '',
+                                'label' => __('Default', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'top',
+                                'label' => __('Top', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'right',
+                                'label' => __('Right', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'bottom',
+                                'label' => __('Bottom', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'left',
+                                'label' => __('Left', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'hide_label',
+                                'label' => __('Hide Label', 'fluentform'),
+                            ],
+                        ],
                         'admin_field_label' => '',
                         'help_message'      => '',
                         'visible'           => true,
@@ -368,6 +502,33 @@ $defaultElements = [
                     'settings' => [
                         'container_class'   => '',
                         'label'             => __('City', 'fluentform'),
+                        'label_placement'   => '',
+                        'label_placement_options'   => [
+                            [
+                                'value' => '',
+                                'label' => __('Default', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'top',
+                                'label' => __('Top', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'right',
+                                'label' => __('Right', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'bottom',
+                                'label' => __('Bottom', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'left',
+                                'label' => __('Left', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'hide_label',
+                                'label' => __('Hide Label', 'fluentform'),
+                            ],
+                        ],
                         'admin_field_label' => '',
                         'help_message'      => '',
                         'error_message'     => '',
@@ -399,6 +560,33 @@ $defaultElements = [
                     'settings' => [
                         'container_class'   => '',
                         'label'             => __('State', 'fluentform'),
+                        'label_placement'   => '',
+                        'label_placement_options'   => [
+                            [
+                                'value' => '',
+                                'label' => __('Default', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'top',
+                                'label' => __('Top', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'right',
+                                'label' => __('Right', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'bottom',
+                                'label' => __('Bottom', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'left',
+                                'label' => __('Left', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'hide_label',
+                                'label' => __('Hide Label', 'fluentform'),
+                            ],
+                        ],
                         'admin_field_label' => '',
                         'help_message'      => '',
                         'error_message'     => '',
@@ -431,6 +619,33 @@ $defaultElements = [
                     'settings' => [
                         'container_class'   => '',
                         'label'             => __('Zip Code', 'fluentform'),
+                        'label_placement'   => '',
+                        'label_placement_options'   => [
+                            [
+                                'value' => '',
+                                'label' => __('Default', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'top',
+                                'label' => __('Top', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'right',
+                                'label' => __('Right', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'bottom',
+                                'label' => __('Bottom', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'left',
+                                'label' => __('Left', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'hide_label',
+                                'label' => __('Hide Label', 'fluentform'),
+                            ],
+                        ],
                         'admin_field_label' => '',
                         'help_message'      => '',
                         'error_message'     => '',
@@ -462,6 +677,33 @@ $defaultElements = [
                     'settings' => [
                         'container_class'   => '',
                         'label'             => __('Country', 'fluentform'),
+                        'label_placement'   => '',
+                        'label_placement_options'   => [
+                            [
+                                'value' => '',
+                                'label' => __('Default', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'top',
+                                'label' => __('Top', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'right',
+                                'label' => __('Right', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'bottom',
+                                'label' => __('Bottom', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'left',
+                                'label' => __('Left', 'fluentform'),
+                            ],
+                            [
+                                'value' => 'hide_label',
+                                'label' => __('Hide Label', 'fluentform'),
+                            ],
+                        ],
                         'admin_field_label' => '',
                         'help_message'      => '',
                         'error_message'     => '',
@@ -720,7 +962,7 @@ $defaultElements = [
                 'layout_class'       => '',
             ],
             'editor_options' => [
-                'title'      => __('Check Box', 'fluentform'),
+                'title'      => __('Checkbox', 'fluentform'),
                 'icon_class' => 'ff-edit-checkbox-1',
                 'template'   => 'inputCheckable',
             ],
@@ -1342,6 +1584,7 @@ $defaultElements = [
             'settings'   => [
                 'container_class'    => '',
                 'conditional_logics' => [],
+                'is_width_auto_calc' => true,
             ],
             'columns' => [
                 ['width' => '', 'left' => '', 'fields' => []],
@@ -1359,6 +1602,7 @@ $defaultElements = [
                 'container_class'    => '',
                 'conditional_logics' => [],
                 'container_width'    => '',
+                'is_width_auto_calc' => true,
             ],
             'columns' => [
                 ['width' => 50, 'fields' => []],
@@ -1377,6 +1621,7 @@ $defaultElements = [
                 'container_class'    => '',
                 'conditional_logics' => [],
                 'container_width'    => '',
+                'is_width_auto_calc' => true,
             ],
             'columns' => [
                 ['width' => 33.33, 'fields' => []],
@@ -1396,6 +1641,7 @@ $defaultElements = [
                 'container_class'    => '',
                 'conditional_logics' => [],
                 'container_width'    => '',
+                'is_width_auto_calc' => true,
             ],
             'columns' => [
                 ['width' => 25, 'fields' => []],
@@ -1416,6 +1662,7 @@ $defaultElements = [
                 'container_class'    => '',
                 'conditional_logics' => [],
                 'container_width'    => '',
+                'is_width_auto_calc' => true,
             ],
             'columns' => [
                 ['width' => 20, 'fields' => []],
@@ -1437,6 +1684,7 @@ $defaultElements = [
                 'container_class'    => '',
                 'conditional_logics' => [],
                 'container_width'    => '',
+                'is_width_auto_calc' => true,
             ],
             'columns' => [
                 ['width' => 16.67, 'fields' => []],

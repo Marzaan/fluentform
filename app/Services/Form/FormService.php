@@ -227,7 +227,7 @@ class FormService
             'Basic' => [],
         ];
 
-        $predefinedForms = $this->model::getPredefinedForms();
+        $predefinedForms = $this->model::findPredefinedForm();
 
         foreach ($predefinedForms as $key => $item) {
             if (!$item['category']) {

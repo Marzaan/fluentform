@@ -34,8 +34,8 @@
                         </card-head>
                         <card-body>
                             <!--Site key-->
-                            <el-form-item class="ff-form-item" v-for="(field,fieldKey) in settings.fields" :key="fieldKey">
-                                <template slot="label">
+                            <el-form-item class="ff-form-item" v-for="(field,fieldKey) in settings.fields" :key="fieldKey" v-if="dependancyPass(field, integration)">
+                                <template slot="label" v-if="field.label">
                                     {{ field.label }}
                                     <el-tooltip v-if="field.label_tips" class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
                                         <div slot="content">
@@ -67,6 +67,28 @@
                                     <el-checkbox v-model="integration[fieldKey]">
                                         {{field.checkbox_label}}
                                     </el-checkbox>
+                                </template>
+                                <template v-else-if="field.type == 'checkbox_yes_no'">
+                                    <el-checkbox true-label="yes" false-label="no" v-model="integration[fieldKey]">
+                                        {{field.checkbox_label}}
+                                    </el-checkbox>
+                                </template>
+                                <template v-else-if="field.type == 'radio_choice'">
+                                    <el-radio-group v-model="integration[fieldKey]">
+                                        <el-radio
+                                                v-for="(fieldLabel, fieldValue) in field.options"
+                                                :key="fieldValue"
+                                                :label="fieldValue"
+                                        >{{ fieldLabel }}
+                                        </el-radio>
+                                    </el-radio-group>
+                                </template>
+                                <template v-else-if="field.type == 'wp_editor'">
+                                    <wp-editor :height="120" v-model="integration[fieldKey]"/>
+                                    <div class="mt-3" v-if="field.info"><span v-html="field.info"></span></div>
+                                </template>
+                                <template v-else-if="field.type == 'input_number'">
+                                    <el-input-number v-model="integration[fieldKey]" :min="1"></el-input-number>
                                 </template>
                                 <template v-else>
                                     <el-input :placeholder="field.placeholder" :type="field.type"
@@ -105,6 +127,8 @@ import ErrorView from '@/common/errorView';
 import Card from '@/admin/components/Card/Card.vue';
 import CardHead from '@/admin/components/Card/CardHead.vue';
 import CardBody from '@/admin/components/Card/CardBody.vue';
+import wpEditor from '@/common/_wp_editor';
+
 
 export default {
     name: "generalIntegration",
@@ -115,7 +139,9 @@ export default {
         VideoDoc,
         Card,
         CardHead,
-        CardBody
+        CardBody,
+        wpEditor,
+
     },
     data() {
         return {
@@ -190,6 +216,40 @@ export default {
                 .finally(() => {
                     this.loading = false;
                 });
+        },
+        dependancyPass(inputItem, settings) {
+            if (inputItem.dependency) {
+                let status = true;
+                let continueLoop = true;
+                inputItem.dependency.forEach((item) => {
+                    if (!continueLoop){
+                        return;
+                    }
+                    let optionItem = item.depends_on;
+                    let dependencyVal = settings[optionItem];
+
+                    if (!this.compare(item.value, item.operator, dependencyVal)) {
+                        status = false;
+                        continueLoop = false;
+                    } else {
+                        status = true;
+                    }
+                });
+
+                return status;
+
+            }
+            return true;
+        },
+        compare(operand1, operator, operand2) {
+            switch(operator) {
+                case '==':
+                    return operand1 == operand2
+                    break;
+                case '!=':
+                    return operand1 != operand2
+                    break;
+            }
         },
         disconnect(data) {
             this.integration = data;

@@ -20,10 +20,10 @@
                         {{ $t('Check Conditional Logic when replaying a feed action') }}
                     </el-checkbox>
 
-                    <el-table border stripe :data="feeds">
+                    <el-table border stripe v-loading="sending" :data="feeds">
                         <el-table-column
                             width="180"
-                            label="Integration">
+                            :label="$t('Integration Icon')">
                             <template slot-scope="scope">
                                 <img v-if="scope.row.provider_logo" class="general_integration_logo"
                                      :src="scope.row.provider_logo" :alt="scope.row.provider"/>
@@ -31,24 +31,25 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            label="Title">
+                            :label="$t('Integration Feed Name')">
                             <template slot-scope="scope">
                                 {{scope.row.name}}
                                 <span v-if="scope.row.has_condition"> {{ $t('(Conditional)') }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
-                            label="Status">
+                            :label="$t('Status')"
+                            width="120">
                             <template slot-scope="scope">
                                 <span v-if="scope.row.enabled">{{ $t('Active') }}</span>
                                 <span v-else>{{ $t('Draft') }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
-                            label="Actions">
+                            :label="$t('Actions')">
                             <template slot-scope="scope">
-                                <el-button @click="replayFeed(scope.row.id)" type="info" size="mini">
-                                    {{ sending ? $t('Loading...') : $t('Replay') }}
+                                <el-button @click="replayFeed(scope.row.id, scope.row.action_id)" type="info" size="mini">
+                                    {{ $t('Replay') }}
                                 </el-button>
                             </template>
                         </el-table-column>
@@ -128,7 +129,7 @@
             }
         },
         methods: {
-            replayFeed(feedId) {
+            replayFeed(feedId, actionId) {
                 if (this.sending) {
                     return;
                 }
@@ -137,21 +138,24 @@
                 this.success_message = '';
                 let data = {
                     action: 'ffpro_post_integration_feed_replay',
-                    feed_id: feedId,
-                    form_id: this.form_id,
-                    entry_id: this.entry_id,
-                    verify_condition: this.verify_condition
+                    verify_condition: this.verify_condition,
+                    logIds: [{
+                        feed_id: feedId,
+                        form_id: this.form_id,
+                        entry_id: this.entry_id,
+                        action_id: actionId
+                    }]
                 };
                 FluentFormsGlobal.$post(data)
                     .then(response => {
-                        this.$notify.success(response.data.message);
+                        this.$success(response.data.message);
                     })
                     .fail(error => {
                         if (!error.responseJSON && !error.responseText || error.responseText == '0') {
                             alert(this.$t('Looks like you are using older version of fluent forms pro. Please update to latest version'));
                             return;
                         }
-                        this.error_message = error.responseJSON.data.message;
+                        this.$fail(error.responseJSON.data.message);
                     })
                     .always(() => {
                         this.sending = false;
@@ -175,13 +179,15 @@
                 this.loading = true;
                 FluentFormsGlobal.$get({
                     action: 'ffpro_get_integration_feeds',
-                    form_id: this.form_id
+                    form_id: this.form_id,
+                    entry_id: this.entry_id
                 })
                     .then(response => {
                         window.ff_form_entry_actions = response.data.feeds;
                         this.feeds = response.data.feeds;
+                        this.action_id = response.data.action_id;
                     })
-                    .fail((errors) => {
+                    .fail((error) => {
                         if (!error.responseJSON && !error.responseText || error.responseText == '0') {
                             alert(this.$t('Looks like you are using older version of fluent forms pro. Please update to latest version'));
                             return;

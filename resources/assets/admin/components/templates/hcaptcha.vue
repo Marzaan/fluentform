@@ -1,7 +1,7 @@
 <template>
     <withLabel :item="item">
       <div class="ff-el-form-captcha-img-wrapper">
-        <img :src="plugin_url+'img/hcaptcha-placeholder.png'" alt="hcaptcha-placeholder">
+        <img :src="plugin_url+'img/hcaptcha-placeholder.png'" :alt="$t('hcaptcha-placeholder')">
       </div>
     </withLabel>
 </template>

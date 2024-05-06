@@ -1,4 +1,5 @@
 <div class="ff_form_wrap ff_screen_<?php echo esc_attr($route); ?>">
+    <div class="global-overlay" id="form-setting-overlay"></div>
 	<?php
         do_action_deprecated(
             'fluentform_before_form_screen_wrapper',
@@ -88,10 +89,24 @@
 
         wp_add_inline_script('fluent_forms_global', "
             //for mobile nav
-            let targetElem = jQuery('.form_internal_menu_inner');
+            let formHeaderMenuElem = jQuery('.form_internal_menu_inner');
             jQuery('.ff_menu_toggle').on('click', function() {
-                targetElem.toggleClass('active');
+                formHeaderMenuElem.toggleClass('active');
             });
+
+            // for setting sidebar
+            let formSettingSidebarElem = jQuery('.ff_settings_sidebar_wrap');
+            let formSettingOverlayElem = jQuery('#form-setting-overlay');
+    
+            jQuery('.ff_sidebar_toggle').on('click', function() {
+                jQuery(formSettingSidebarElem).add(formSettingOverlayElem).toggleClass('active');
+            });
+            
+            jQuery(formSettingOverlayElem).on('click', function() {
+                jQuery(formSettingOverlayElem).add(formSettingSidebarElem).removeClass('active');
+            });
+
+            
         ");
     ?>
 

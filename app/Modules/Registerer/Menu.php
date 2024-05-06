@@ -253,6 +253,11 @@ class Menu
             return;
         }
 
+        $forms = wpFluent()->table('fluentform_forms')
+                           ->orderBy('id', 'desc')
+                           ->select(['id', 'title'])
+                           ->get();
+
         wp_enqueue_script('fluent_forms_global');
         wp_localize_script('fluent_forms_global', 'fluent_forms_global_var', [
             'fluent_forms_admin_nonce' => wp_create_nonce('fluent_forms_admin_nonce'),
@@ -273,7 +278,10 @@ class Menu
                 'mollie'               => fluentformMix('img/payment/mollie.png'),
                 'paypal'               => fluentformMix('img/payment/paypal.png'),
                 'stripe'               => fluentformMix('img/payment/stripe.png')
-            ]
+            ],
+            'forms'                    => $forms,
+            'hasPro'                   => defined('FLUENTFORMPRO'),
+            'has_entries_import'       => defined('FLUENTFORMPRO') && version_compare(FLUENTFORMPRO_VERSION, '5.1.7', '>='),
         ]);
 
         $page = sanitize_text_field($this->app->request->get('page'));
@@ -564,7 +572,7 @@ class Menu
         $form = wpFluent()->table('fluentform_forms')->find($form_id);
 
         if (!$form) {
-            echo __('<h2>No form found</h2>', 'fluentform');
+            echo '<h2>'.__('No form found', 'fluentform').'</h2>';
             return;
         }
 
@@ -734,6 +742,7 @@ class Menu
             ],
             'countries'            => getFluentFormCountryList(),
             'getIpInfo'            => Helper::getIpinfo(),
+            'has_conv_form_save_and_resume' => defined('FLUENTFORMPRO') && version_compare(FLUENTFORMPRO_VERSION, '5.1.12', '>=')
         ]);
 
         $this->app->view->render('admin.form.settings', [
@@ -1058,6 +1067,7 @@ class Menu
             'status_query' => sanitize_text_field($this->app->request->get('status')),
             'date_start_query' => sanitize_text_field($this->app->request->get('start_date')),
             'date_end_query' => sanitize_text_field($this->app->request->get('end_date')),
+            'has_entries_import' => defined('FLUENTFORMPRO') && version_compare(FLUENTFORMPRO_VERSION, '5.1.7', '>='),
         ]);
 
         $this->app->view->render('admin.tools.index');

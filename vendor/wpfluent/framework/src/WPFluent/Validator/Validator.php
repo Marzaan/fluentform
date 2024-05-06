@@ -302,4 +302,40 @@ class Validator
     {
         return $this->validatePresent($attribute, $value) || $this->isImplicit($rule);
     }
+
+    /**
+     * Determine if the given attribute has a rule in the given set.
+     *
+     * @param string $attribute
+     * @param string|array $rules
+     * @return bool
+     */
+    public function hasRule($attribute, $rules)
+    {
+        return ! is_null($this->getRule($attribute, $rules));
+    }
+
+    /**
+     * Get a rule and its parameters for a given attribute.
+     *
+     * @param string $attribute
+     * @param string|array $rules
+     * @return array|null
+     */
+    protected function getRule($attribute, $rules)
+    {
+        if (! array_key_exists($attribute, $this->rules)) {
+            return;
+        }
+
+        $rules = (array) $rules;
+
+        foreach ($this->rules[$attribute] as $rule) {
+            list($rule, $parameters) = ValidationRuleParser::parse($rule);
+
+            if (in_array($rule, $rules)) {
+                return [$rule, $parameters];
+            }
+        }
+    }
 }

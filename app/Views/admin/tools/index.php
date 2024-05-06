@@ -45,6 +45,13 @@ use FluentForm\App\Helpers\Helper;
                     </a>
                 </li>
                 <li class="ff_list_button_item">
+                    <a class="ff_list_button_link" data-hash="importentries"
+                       href="<?php echo esc_url(Helper::makeMenuUrl('fluent_forms_transfer', ['hash' => 'importentries'])); ?>"
+                    >
+                        <?php echo __('Import Entries', 'fluentform'); ?>
+                    </a>
+                </li>
+                <li class="ff_list_button_item">
                     <a class="ff_list_button_link" data-hash="migrator"
                        href="<?php echo esc_url(Helper::makeMenuUrl('fluent_forms_transfer', ['hash' => 'migrator'])); ?>"
                     >

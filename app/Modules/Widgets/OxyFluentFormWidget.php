@@ -505,7 +505,9 @@ class OxyFluentFormWidget extends OxygenEl
             if (!wp_script_is('flatpickr', 'registered')) {
                 wp_enqueue_style(
                     'flatpickr',
-                    fluentFormMix('libs/flatpickr/flatpickr.min.css')
+                    fluentFormMix('libs/flatpickr/flatpickr.min.css'),
+                    [],
+                    FLUENTFORM_VERSION
                 );
             }
 

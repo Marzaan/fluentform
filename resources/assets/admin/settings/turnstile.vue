@@ -52,13 +52,13 @@
                         <el-input type="password" v-model="turnstile.secretKey" @change="load"></el-input>
                     </el-form-item>
 
-                    <el-form-item class="ff-form-item-flex ff-form-item reverse">
+                    <el-form-item class="ff-form-item">
                         <template slot="label">
-                            {{ $t('Enable Invisible Option') }}
+                            {{ $t('Appearance Mode') }}
                             <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
                                 <div slot="content">
                                     <p>
-                                        {{ $t('If you enable this then the field will be invisible but works in the background') }}
+                                        {{ $t('You can select how the turnstile will appear') }}
                                     </p>
                                 </div>
 
@@ -66,7 +66,9 @@
                             </el-tooltip>
                         </template>
 
-                        <el-checkbox class="mr-3" v-model="turnstile.invisible" true-label="yes" false-label="no"></el-checkbox>
+                        <el-radio class="mr-3" v-model="turnstile.appearance" label="always">{{$t('Always (Default)')}}</el-radio>
+                        <el-radio class="mr-3" v-model="turnstile.appearance" label="execute">{{$t('Execute')}}</el-radio>
+                        <el-radio class="mr-3" v-model="turnstile.appearance" label="interaction-only">{{$t('Interaction-only (Hidden)')}}</el-radio>
                     </el-form-item>
 
                     <el-form-item class="ff-form-item">
@@ -83,9 +85,9 @@
                             </el-tooltip>
                         </template>
 
-                        <el-radio v-model="turnstile.theme" label="auto">Auto</el-radio>
-                        <el-radio v-model="turnstile.theme" label="light">Light</el-radio>
-                        <el-radio v-model="turnstile.theme" label="dark">Dark</el-radio>
+                        <el-radio v-model="turnstile.theme" label="auto">{{ $t('Auto') }}</el-radio>
+                        <el-radio v-model="turnstile.theme" label="light">{{ $t('Light') }}</el-radio>
+                        <el-radio v-model="turnstile.theme" label="dark">{{ $t('Dark') }}</el-radio>
                     </el-form-item>
 
                     <!--Validate Keys-->
@@ -94,7 +96,6 @@
                             class="cf-turnstile"
                             id="turnstile"
                             :data-sitekey="turnstile.siteKey"
-                            data-callback="turnstileCallback"
                         ></div>
                     </el-form-item>
 
@@ -147,6 +148,7 @@ export default {
                 siteKey: "",
                 secretKey: "",
                 invisible: "no",
+                appearance: 'always',
                 theme: 'auto'
             },
             turnstile_status: false,
@@ -252,6 +254,9 @@ export default {
                 .then(response => {
                     const turnstile = response._fluentform_turnstile_details;
                     this.turnstile = turnstile;
+                    if (this.turnstile?.invisible == 'yes') {
+                        this.turnstile.appearance = 'interaction-only';
+                    }
                     this.turnstile_status = response._fluentform_turnstile_keys_status;
                 });
         }

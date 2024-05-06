@@ -65,7 +65,7 @@ class Str
         }
 
         foreach ((array) $needles as $needle) {
-            if ('' != $needle && false !== fluentform_mb_strpos($haystack, $needle)) {
+            if ('' != $needle && false !== fluentform_mb_strpos(strtolower($haystack), strtolower($needle))) {
                 return true;
             }
         }

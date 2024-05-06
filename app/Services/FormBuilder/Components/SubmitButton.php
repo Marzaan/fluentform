@@ -116,8 +116,9 @@ class SubmitButton extends BaseComponent
                 $styles .= 'form.fluent_form_' . $form->id . ' .wpf_has_custom_css.ff-btn-submit:hover { ' . $hoverStates . ' } ';
             }
         } elseif ('no_style' != $btnStyle) {
-
-            $styles .= 'form.fluent_form_' . $form->id . ' .ff-btn-submit:not(.ff_btn_no_style) { background-color: ' . esc_attr(ArrayHelper::get($data, 'settings.background_color')) . '; color: ' . esc_attr(ArrayHelper::get($data, 'settings.color')) . '; }';
+            $bgColor = esc_attr(ArrayHelper::get($data, 'settings.background_color'));
+            $bgColor = str_replace('#1a7efb','var(--fluentform-primary)',$bgColor);
+            $styles .= 'form.fluent_form_' . $form->id . ' .ff-btn-submit:not(.ff_btn_no_style) { background-color: ' . $bgColor . '; color: ' . esc_attr(ArrayHelper::get($data, 'settings.color')) . '; }';
         }
 
         $atts = $this->buildAttributes($data['attributes']);

@@ -72,7 +72,6 @@ class AddOnModule
             'fluentform/global_addons',
             'Use fluentform/global_addons instead of fluentform_global_addons'
         );
-
         $addOns = apply_filters('fluentform/global_addons', $addOns);
 
         $addOns['slack'] = [

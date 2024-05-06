@@ -50,7 +50,7 @@
                     </el-col>
 	                <el-col :span="8">
 		                <div class="ff_form_group">
-			                <h6 class="fs-15 mb-3">Date</h6>
+			                <h6 class="fs-15 mb-3">{{ $t('Date') }}</h6>
 			                <el-date-picker
 				                v-model="filter_date_range"
 				                type="datetimerange"
@@ -85,48 +85,53 @@
                             class="entry_submission_log ff_table_s2"
                             @selection-change="handleSelectionChange"
                         >
-                            <el-table-column type="selection" width="50"></el-table-column>
+                            <el-table-column sortable type="selection" width="50"></el-table-column>
                             <el-table-column type="expand">
                                 <template slot-scope="props">
                                     <p v-html="props.row.description"></p>
                                 </template>
                             </el-table-column>
-                            <el-table-column width="50px" :label="$t('ID')">
+                            <el-table-column sortable prop="id" width="100px" :label="$t('ID')"></el-table-column>
+                            <el-table-column sortable width="140px" :label="$t('Submission ID')">
                                 <template slot-scope="props">
                                     <a v-if="props.row.submission_url" :href="props.row.submission_url">#{{props.row.source_id}}</a>
                                     <span v-else>n/a</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column :label="$t('Form')">
+                            <el-table-column sortable :label="$t('Form')">
                                 <template slot-scope="props">
                                     <span v-if="props.row.form_title">{{props.row.form_title}}</span>
                                     <span v-else>{{ $t('General Log') }}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="title" :label="$t('Title')"></el-table-column>
-                            <el-table-column prop="status" :label="$t('Status')" width="100">
+                            <el-table-column sortbale prop="title" :label="$t('Title')"></el-table-column>
+                            <el-table-column sortable prop="status" :label="$t('Status')" width="100">
                                 <template slot-scope="props">
-                                    <el-tag :type="`${props.row.status == 'failed' ? 'danger' : props.row.status == 'success' ? 'success' : 'info'}`" size="small" class="el-tag--pill text-capitalize">
+                                    <el-tag :type="getStatusClass(props.row.status)" size="small" class="el-tag--pill text-capitalize">
                                         {{props.row.status}}
                                     </el-tag>
                                 </template>
                             </el-table-column>
-                            <el-table-column width="120" :label="$t('Component')">
+                            <el-table-column sortable :label="$t('Component')">
                                 <template slot-scope="props">
                                     <div>{{ props.row.component }}</div>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="created_at" :label="$t('Date')" width="180"></el-table-column>
-                            <el-table-column width="70" :label="$t('Action')">
+                            <el-table-column width="115" fixed="right" align="center" :label="$t('Action')">
                                 <template slot-scope="props">
-                                    <remove :plain="true" @on-confirm="deleteItems(props.row.id)">
-                                        <el-button
-                                            class="el-button--icon"
-                                            size="mini"
-                                            type="danger"
-                                            icon="el-icon-delete"
-                                        />
-                                    </remove>
+                                    <btn-group size="sm">
+                                        <btn-group-item>
+                                            <remove :plain="true" @on-confirm="deleteItems(props.row.id)">
+                                                <el-button
+                                                    class="el-button--icon"
+                                                    size="mini"
+                                                    type="danger"
+                                                    icon="el-icon-delete"
+                                                />
+                                            </remove>
+                                        </btn-group-item>
+                                    </btn-group>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -158,6 +163,8 @@
     import CardBody from '@/admin/components/Card/CardBody.vue';
     import CardHead from '@/admin/components/Card/CardHead.vue';
     import { scrollTop } from '@/admin/helpers';
+    import BtnGroup from "@/admin/components/BtnGroup/BtnGroup.vue";
+    import BtnGroupItem from "@/admin/components/BtnGroup/BtnGroupItem.vue";
 
     export default {
         name: 'ActivityLogs',
@@ -166,7 +173,9 @@
             remove,
             Card,
             CardHead,
-            CardBody
+            CardBody,
+            BtnGroup,
+            BtnGroupItem
         },
         data() {
             return {
@@ -268,7 +277,7 @@
                     logIds = [singlelogId]
                 } else {
                     each(this.multipleSelection, (item) => {
-                    logIds.push(item.id);
+                        logIds.push(item.id);
                     });
                 }
 
@@ -323,6 +332,17 @@
                     per_page: data.per_page || localStorage.getItem('activityLogsPerPage') || 10,
                 }
             },
+            getStatusClass(status) {
+                if (status == 'failed') {
+                    return 'danger';
+                }else if (status == 'success') {
+                    return 'success';
+                }else if (status == 'warning') {
+                    return 'warning';
+                }else  {
+                    return 'info';
+                }
+            }
         },
         mounted() {
             this.getLogs();

@@ -80,7 +80,7 @@ class Name extends Select
                 $atts = $this->buildAttributes($field['attributes']);
 
                 $ariaRequired = 'false';
-                if (ArrayHelper::get($data, 'settings.validation_rules.required.value')) {
+                if (ArrayHelper::get($field, 'settings.validation_rules.required.value')) {
                     $ariaRequired = 'true';
                 }
 

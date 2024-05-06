@@ -331,36 +331,6 @@ $app->addAction('wp_ajax_fluentform-change-entry-status', function () {
     (new \FluentForm\App\Modules\Entries\Entries())->changeEntryStatus();
 });
 
-$app->addAction('wp_ajax_fluentform-delete-entry', function () {
-    dd('wp_ajax_fluentform-delete-entry');
-    Acl::verify('fluentform_manage_entries');
-    (new \FluentForm\App\Modules\Entries\Entries())->deleteEntry();
-});
-
-$app->addAction('wp_ajax_fluentform-change-entry-favorites', function () {
-    dd('wp_ajax_fluentform-change-entry-favorites');
-    Acl::verify('fluentform_entries_viewer');
-    (new \FluentForm\App\Modules\Entries\Entries())->favoriteChange();
-});
-
-$app->addAction('wp_ajax_fluentform-do_entry_bulk_actions', function () {
-    dd('wp_ajax_fluentform-change-entry-favorites');
-    Acl::verify('fluentform_manage_entries');
-    (new \FluentForm\App\Modules\Entries\Entries())->handleBulkAction();
-});
-
-$app->addAction('wp_ajax_fluentform-get-extra-form-settings', function () use ($app) {
-    dd('fluentform-get-extra-form-settings'); // ajax call from resources/assets/admin/views/GlobalSettings.vue, that is never used
-    Acl::verify('fluentform_forms_manager');
-    (new FluentForm\App\Modules\Form\Settings\ExtraSettings($app))->getExtraSettingNavs();
-});
-
-$app->addAction('wp_ajax_fluentform-get-form-settings-extra-component', function () use ($app) {
-    dd('wp_ajax_fluentform-get-form-settings-extra-component');
-    Acl::verify('fluentform_forms_manager');
-    (new FluentForm\App\Modules\Form\Settings\ExtraSettings($app))->getExtraSettingsComponent();
-});
-
 $app->addAction(
     'wp_ajax_fluentform-get-pages',
     function () {
@@ -404,64 +374,6 @@ $app->addAction('wp_ajax_fluentform-export-forms', function () use ($app) {
 $app->addAction('wp_ajax_fluentform-import-forms', function () use ($app) {
     Acl::verify('fluentform_settings_manager');
     (new \FluentForm\App\Modules\Transfer\Transfer())->importForms();
-});
-
-$app->addAction('wp_ajax_fluentform-get-all-forms', function () use ($app) {
-    dd('wp_ajax_fluentform-get-all-forms'); //Need to check this, could not find any use
-    Acl::verify(['fluentform_settings_manager', 'fluentform_forms_manager']);
-    (new \FluentForm\App\Modules\Form\Form($app))->getAllForms();
-});
-
-// Fetch simplified information for all predefined forms
-$app->addAction('wp_ajax_fluentform-predefined-forms', function () use ($app) {
-    dd('wp_ajax_fluentform-predefined-forms');
-    Acl::hasAnyFormPermission();
-    (new \FluentForm\App\Modules\Form\Predefined($app))->all();
-});
-
-// Create a form by predefined data
-$app->addAction('wp_ajax_fluentform-predefined-create', function () use ($app) {
-    dd('wp_ajax_fluentform-predefined-create');
-    Acl::verify('fluentform_forms_manager');
-    (new \FluentForm\App\Modules\Form\Predefined($app))->create();
-});
-
-/**
- * Add fluentform_submission_inserted actions for
- * slack and mailchimp if the form was submitted.
- */
-
-// Permission settings
-$app->addAction('wp_ajax_fluentform_get_access_roles', function () {
-    dd('wp_ajax_fluentform_get_access_roles');
-    Acl::verify('fluentform_full_access');
-    $roleManager = new \FluentForm\App\Modules\Acl\RoleManager();
-    $roleManager->getRoles();
-});
-
-$app->addAction('wp_ajax_fluentform_set_access_roles', function () {
-    dd('wp_ajax_fluentform_set_access_roles');
-    Acl::verify('fluentform_full_access');
-    $roleManager = new \FluentForm\App\Modules\Acl\RoleManager();
-    $roleManager->setRoles();
-});
-
-$app->addAction('wp_ajax_fluentform_get_managers', function () {
-    dd('wp_ajax_fluentform_get_managers');
-    Acl::verify('fluentform_full_access');
-    (new \FluentForm\App\Modules\Acl\Managers())->get();
-});
-
-$app->addAction('wp_ajax_fluentform_set_managers', function () {
-    dd('wp_ajax_fluentform_set_managers');
-    Acl::verify('fluentform_full_access');
-    (new \FluentForm\App\Modules\Acl\Managers())->store();
-});
-
-$app->addAction('wp_ajax_fluentform_del_managers', function () {
-    dd('wp_ajax_fluentform_del_managers');
-    Acl::verify('fluentform_full_access');
-    (new \FluentForm\App\Modules\Acl\Managers())->remove();
 });
 
 /*

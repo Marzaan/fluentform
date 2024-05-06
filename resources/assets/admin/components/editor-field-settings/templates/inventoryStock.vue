@@ -7,13 +7,49 @@
                 <div class="vddl-list__handle optionsToRender"
                      v-for="(option, index) in editItem.settings[getOptionsKey]" :key="option.id">
 
-                    <div class="vddl-nodrag">
-                        <el-input :min="1" type="number" style="width: 30%"
-                                  v-model.number="editItem.settings[getOptionsKey][index].quantity"></el-input>
-                        <div>&nbsp;</div>
-                        <div>
-                            {{ option.label }}
-                        </div>
+                    <div class="">
+	                    <!-- Multiple Type Inventory -->
+	                    <template v-if="!isSingleInput">
+		                    <el-row :gutter="10" style="align-items: center;">
+			                    <el-col :span="12">
+				                    <!-- Global Inventory -->
+				                    <el-select v-if="isGlobalInventory" class="el-fluid" v-model="editItem.settings[getOptionsKey][index].global_inventory" :filterable="true" clearable>
+					                    <el-option
+						                    v-for="item in listItem.options"
+						                    :key="item.value"
+						                    :label="item.label"
+						                    :value="item.value">
+					                    </el-option>
+				                    </el-select>
+
+				                    <!-- Simple Inventory -->
+				                    <el-input v-else :min="1" type="number"
+				                              v-model.number="editItem.settings[getOptionsKey][index].quantity"></el-input>
+			                    </el-col>
+			                    <el-col :span="12">
+				                    <span >
+					                    {{ option.label }}
+				                    </span>
+			                    </el-col>
+		                    </el-row>
+	                    </template>
+
+						<!-- Single Type Inventory -->
+	                    <template v-else>
+		                    <!-- Global Inventory -->
+		                    <el-select v-if="isGlobalInventory" class="el-fluid" v-model="editItem.settings.global_inventory" :filterable="true" clearable>
+			                    <el-option
+				                    v-for="item in listItem.options"
+				                    :key="item.value"
+				                    :label="item.label"
+				                    :value="item.value">
+			                    </el-option>
+		                    </el-select>
+
+		                    <!-- Simple Inventory -->
+		                    <el-input v-else :min="1" class="el-fluid" type="number" style="width: 30%"
+		                              v-model.number="editItem.settings.single_inventory_stock"></el-input>
+	                    </template>
                     </div>
 
                 </div>
@@ -55,17 +91,17 @@
                 }
             },
             isSingleInput(){
-                if (this.editItem.element == 'multi_payment_component' && this.editItem.attribute.type == 'single'){
+                if (this.editItem.element == 'multi_payment_component' && this.editItem.attributes.type == 'single'){
                     return true;
                 }
                 return  false;
             },
             isInventoryEnabled(){
-                if ( this.editItem.settings.inventory_type != false){
-                    return true;
-                }
-                return  false;
-            }
+				return ['simple', 'global'].includes(this.editItem.settings.inventory_type);
+            },
+	        isGlobalInventory(){
+				return this.editItem.settings.inventory_type === 'global';
+            },
         },
         mounted() {
             let items = this.editItem.settings[this.getOptionsKey];

@@ -58,9 +58,36 @@ class SubmissionHandlerService
         if (!$this->form) {
             throw new ValidationException('', 422, null, ['errors' => 'Sorry, No corresponding form found']);
         }
+
+        /**
+         * Filtering empty array inputs to normalize
+         *
+         * For unchecked checkable type, the name filled with empty value
+         * by serialized on the client-side JavaScript. This adjustment ensures filter empty array inputs to normalize- Ex: [''] -> []
+         */
+        foreach ($formDataRaw as $name => $input) {
+            if (is_array($input)) {
+                $formDataRaw[$name] = array_filter($input);
+            }
+        }
+
         // Parse the form and get the flat inputs with validations.
-        $this->fields = FormFieldsParser::getInputs($this->form, ['rules', 'raw']);
-        $this->formData = fluentFormSanitizer($formDataRaw, null, $this->fields);
+        $this->fields = FormFieldsParser::getEssentialInputs($this->form, $formDataRaw, ['rules', 'raw']);
+    
+        // @todo Remove this after few version as we are doing it during conversation now
+        // Removing left out fields during conversation which causes validation issues
+        $isConversationalForm = Helper::isConversionForm($formId);
+        if ($isConversationalForm) {
+            $conversationalForm = $this->form;
+            $conversationalForm->form_fields = \FluentForm\App\Services\FluentConversational\Classes\Converter\Converter::convertExistingForm($this->form);
+            $conversationalFields = FormFieldsParser::getInputs($conversationalForm);
+            $this->fields = array_intersect_key($this->fields, $conversationalFields);
+        }
+        $formData = fluentFormSanitizer($formDataRaw, null, $this->fields);
+
+        $acceptedFieldKeys = array_merge($this->fields, array_flip(Helper::getWhiteListedFields($formId)));
+        
+        $this->formData = array_intersect_key($formData, $acceptedFieldKeys);
     }
     
     
@@ -143,9 +170,9 @@ class SubmissionHandlerService
     public function processSubmissionData($insertId, $formData, $form)
     {
         $form = isset($this->form) ? $this->form : $form;
+        $formData = isset($this->formData) ? $this->formData : $formData;
         do_action_deprecated(
-            'fluentform_before_form_actions_processing',
-            [
+            'fluentform_before_form_actions_processing', [
                 $insertId,
                 $this->formData,
                 $form
@@ -155,7 +182,7 @@ class SubmissionHandlerService
             'Use fluentform/before_form_actions_processing instead of fluentform_before_form_actions_processing.'
         );
     
-        do_action('fluentform/before_form_actions_processing', $insertId, $this->formData, $form);
+        do_action('fluentform/before_form_actions_processing', $insertId, $formData, $form);
         
         if ($insertId) {
             ob_start();
@@ -168,21 +195,14 @@ class SubmissionHandlerService
         $returnData = $this->getReturnData($insertId, $form, $formData);
         $error = '';
         try {
-
             do_action('fluentform_submission_inserted', $insertId, $formData, $form);
-
-            do_action(
-                'fluentform/submission_inserted',
-                $insertId,
-                $formData,
-                $form
-            );
+    
+            do_action('fluentform/submission_inserted', $insertId, $formData, $form);
 
             Helper::setSubmissionMeta($insertId, 'is_form_action_fired', 'yes');
 
             do_action_deprecated(
-                'fluentform_submission_inserted_' . $form->type . '_form',
-                [
+                'fluentform_submission_inserted_' . $form->type . '_form', [
                     $insertId,
                     $formData,
                     $form
@@ -206,8 +226,7 @@ class SubmissionHandlerService
         }
 
         do_action_deprecated(
-            'fluentform_before_submission_confirmation',
-            [
+            'fluentform_before_submission_confirmation', [
                 $insertId,
                 $formData,
                 $form
@@ -328,18 +347,29 @@ class SubmissionHandlerService
                 if (strpos($redirectUrl, '&') || '=' == substr($redirectUrl, -1) || $encodeUrl) {
                     $urlArray = explode('?', $redirectUrl);
                     $baseUrl = array_shift($urlArray);
-                    
-                    $query = wp_parse_url($redirectUrl)['query'];
+
+                    $parsedUrl = wp_parse_url($redirectUrl);
+                    $query = Arr::get($parsedUrl, 'query', '');
                     $queryParams = explode('&', $query);
                     
                     $params = [];
                     foreach ($queryParams as $queryParam) {
                         $paramArray = explode('=', $queryParam);
                         if (!empty($paramArray[1])) {
-                            $params[$paramArray[0]] = urlencode($paramArray[1]);
+                            if (strpos($paramArray[1], '%') === false) {
+                                $params[$paramArray[0]] = urlencode($paramArray[1]);
+                            } else {
+                                // Param string is URL-encoded
+                                $params[$paramArray[0]] = $paramArray[1];
+                            }
                         }
                     }
-                    $redirectUrl = add_query_arg($params, $baseUrl);
+                    if ($params) {
+                        $redirectUrl = add_query_arg($params, $baseUrl);
+                        if ($fragment = Arr::get($parsedUrl, 'fragment')) {
+                            $redirectUrl .= '#' . $fragment;
+                        }
+                    }
                 }
             }
             
@@ -354,7 +384,7 @@ class SubmissionHandlerService
     
             $redirectUrl = apply_filters('fluentform/redirect_url_value', wp_sanitize_redirect(urldecode($redirectUrl)), $insertId, $form, $formData);
             $returnData = [
-                'redirectUrl' => $redirectUrl,
+                'redirectUrl' => esc_url_raw($redirectUrl),
                 'message'     => fluentform_sanitize_html($message),
             ];
         }

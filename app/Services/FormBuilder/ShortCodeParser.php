@@ -18,6 +18,8 @@ class ShortCodeParser
 
     protected static $formFields = null;
 
+    protected static $provider = null;
+
     protected static $store = [
         'inputs'          => null,
         'original_inputs' => null,
@@ -30,7 +32,7 @@ class ShortCodeParser
     public static function parse($parsable, $entryId, $data = [], $form = null, $isUrl = false, $providerOrIsHTML = false)
     {
         try {
-            static::setDependencies($entryId, $data, $form);
+            static::setDependencies($entryId, $data, $form, $providerOrIsHTML);
 
             if (is_array($parsable)) {
                 return static::parseShortCodeFromArray($parsable, $isUrl, $providerOrIsHTML);
@@ -45,11 +47,12 @@ class ShortCodeParser
         }
     }
 
-    protected static function setDependencies($entry, $data, $form)
+    protected static function setDependencies($entry, $data, $form, $provider)
     {
         static::setEntry($entry);
         static::setData($data);
         static::setForm($form);
+        static::$provider = $provider;
     }
 
     protected static function setEntry($entry)
@@ -116,6 +119,9 @@ class ShortCodeParser
             if (false !== strpos($matches[1], 'inputs.')) {
                 $formProperty = substr($matches[1], strlen('inputs.'));
                 $value = static::getFormData($formProperty, $isHtml);
+            }else if (false !== strpos($matches[1], 'labels.')) {
+                $formLabelProperty = substr($matches[1], strlen('labels.'));
+                $value = static::getFormLabelData($formLabelProperty);
             } elseif (false !== strpos($matches[1], 'user.')) {
                 $userProperty = substr($matches[1], strlen('user.'));
                 $value = static::getUserData($userProperty);
@@ -134,8 +140,7 @@ class ShortCodeParser
             } elseif (false !== strpos($matches[1], 'payment.')) {
                 $property = substr($matches[1], strlen('payment.'));
                 $deprecatedValue = apply_filters_deprecated(
-                    'fluentform_payment_smartcode',
-                    [
+                    'fluentform_payment_smartcode', [
                         '',
                         $property,
                         self::getInstance()
@@ -246,6 +251,27 @@ class ShortCodeParser
             static::getForm()->id,
             $isHtml
         );
+    }
+    
+    protected static function getFormLabelData($key)
+    {
+        if (is_null(static::$formFields)) {
+            static::$formFields = FormFieldsParser::getShortCodeInputs(
+                static::getForm(),
+                ['admin_label', 'attributes', 'options', 'raw', 'label']
+            );
+        }
+        $inputLabel = ArrayHelper::get(static::$formFields[$key], 'label', '');
+        $inputLabel = str_replace(['[', ']'], '', $inputLabel);
+        $keys = explode(".", $key);
+        if (count($keys) > 1) {
+            $parentKey = array_shift($keys);
+            $inputLabel = str_replace($parentKey, '', $inputLabel);
+        }
+        if(empty($inputLabel)){
+            $inputLabel = ArrayHelper::get(static::$formFields[$key], 'admin_label', '');
+        }
+        return $inputLabel;
     }
 
     protected static function getUserData($key)
@@ -444,6 +470,8 @@ class ShortCodeParser
             $value = $prefix . uniqid();
 
             return apply_filters('fluentform/shortcode_parser_callback_random_string', $value, $prefix, static::getInstance());
+        } elseif ('form_title' == $key) {
+            return static::getForm()->title;
         }
 
 
@@ -503,6 +531,11 @@ class ShortCodeParser
         }
 
         return static::$form;
+    }
+
+    public static function getProvider()
+    {
+        return static::$provider;
     }
 
     public static function getEntry()

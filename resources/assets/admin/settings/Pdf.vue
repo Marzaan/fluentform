@@ -4,7 +4,7 @@
             <card>
                 <card-head>
                     <h5 class="title">{{ $t('Global PDF Settings') }}</h5>
-                    <p class="text">{{$t('This global settings will be set as default for your new PDF feed for any form.Then you can customize for a specific PDF generator feed')}}</p>
+                    <p class="text">{{$t('This global settings will be set as default for your new PDF feed for any form. Then you can customize for a specific PDF generator feed')}}</p>
                 </card-head>
                 <card-body v-loading="loading">
                     <el-form class="ff_pdf_form_wrap" label-position="top">

@@ -13,6 +13,11 @@
                         </el-button>
                     </btn-group-item>
                     <btn-group-item as="div">
+                        <el-button @click="showImportEntriesModal = true"  class="el-button">
+                            {{ $t('Import') }}
+                        </el-button>
+                    </btn-group-item>
+                    <btn-group-item as="div">
                         <el-dropdown @command="selectFieldsToExport" trigger="click">
                             <el-button>
                                 {{ $t('Export') }}
@@ -63,7 +68,7 @@
                             </label>
                             <el-select
                                     clearable
-                                    placeholder="Bulk Actions"
+                                    :placeholder="$t('Bulk Actions')"
                                     id="bulk-action-selector-top"
                                     name="action"
                                     popper-class="el-big-items"
@@ -77,7 +82,7 @@
                                     <el-option
                                             v-for="item in group"
                                             :key="item.action"
-                                            :label="item.label"
+                                            :label="$t(item.label)"
                                             :value="item.action"
                                     >
                                     </el-option>
@@ -93,6 +98,7 @@
                                 clearable
                                 v-model="entry_type"
                                 :placeholder="$t('All Types')"
+                                filterable
                                 @change="filterEntryType()"
                         >
                             <el-option
@@ -182,7 +188,7 @@
                                     </el-radio-group>
                                 </div>
                                 <div class="ff_advanced_search_date_range">
-                                    <p>Select a Timeframe</p>
+                                    <p>{{ $t('Select a Timeframe') }}</p>
                                     <el-date-picker
                                             v-model="filter_date_range"
                                             type="daterange"
@@ -199,13 +205,15 @@
                         </div><!-- .ff_advanced_filter_wrap -->
                     </btn-group-item>
 	                <btn-group-item as="div">
-		                <el-button @click="getData">
+		                <el-button @click="getData" v-loading="loading && visibleColumns">
 			                <i class="ff-icon el-icon-refresh"></i>
 		                </el-button>
 	                </btn-group-item>
                 </btn-group>
             </section-head-content>
         </section-head>
+
+        <ImportEntriesModal :app="app" :form_id="form_id" :visibility.sync="showImportEntriesModal" />
 
         <el-dialog :visible.sync="visibleColReorderModal">
             <template slot="title">
@@ -465,7 +473,7 @@
 
                         <el-checkbox-group class="ff_2_col_items mb15" v-model="fieldsToExport" @change="handleCheckedFieldsChange" >
                            <div>
-                               <p><b>Form Inputs</b></p>
+                               <p><b>{{ $t('Form Inputs') }}</b></p>
                                <div class="separator mb-4"></div>
                                <el-checkbox :disabled="!has_pro"  v-for="(label,name) in input_labels" :label="name" :key="name" >{{ label }}</el-checkbox>
                            </div>
@@ -473,7 +481,7 @@
 
                         <el-checkbox-group class="ff_2_col_items " v-model="shortcodesToExport" @change="handleCheckedFieldsChange">
                             <div >
-                                <p><b>Submission Info</b></p>
+                                <p><b>{{ $t('Submission Info') }}</b></p>
                                 <div class="separator mb-4"></div>
                                 <el-checkbox :disabled="!has_pro" v-for="(label,name) in editor_shortcodes"   :label="name" :key="name" >{{ label }}</el-checkbox>
                             </div>
@@ -507,6 +515,7 @@
     import BtnGroupItem from '@/admin/components/BtnGroup/BtnGroupItem.vue';
     import SectionHead from '@/admin/components/SectionHead/SectionHead.vue';
     import SectionHeadContent from '@/admin/components/SectionHead/SectionHeadContent.vue';
+    import ImportEntriesModal from "@/admin/components/modals/ImportEntriesModal.vue";
 
     export default {
         name: 'FormEntries',
@@ -518,7 +527,8 @@
             BtnGroup,
             BtnGroupItem,
             SectionHead,
-            SectionHeadContent
+            SectionHeadContent,
+            ImportEntriesModal
         },
         watch: {
             search_string() {
@@ -642,6 +652,8 @@
                 has_pro : window.fluent_form_entries_vars.has_pro,
                 isIndeterminateFieldsSelection: true,
                 checkAllFields : false,
+                showImportEntriesModal: false,
+                app: window.fluent_forms_global_var
             }
         },
         computed: {
@@ -654,11 +666,11 @@
                     'statuses': [],
                     'other': [
                         {
-                            label: this.$t('Mark as Favorites'),
+                            label: 'Mark as Favorites',
                             action: 'other.make_favorite'
                         },
                         {
-                            label: this.$t('Remove from Favorites'),
+                            label: 'Remove from Favorites',
                             action: 'other.unmark_favorite'
                         }
                     ]
@@ -667,7 +679,7 @@
                 if (this.hasPermission('fluentform_manage_entries')) {
                     bulk_actions['other'].push(
                         {
-                            label: this.$t('Delete Permanently'),
+                            label: 'Delete Permanently',
                             action: 'other.delete_permanently'
                         }
                     );
@@ -788,6 +800,7 @@
 	            if (this.advancedFilter) {
 		            this.advancedFilter = false;
 	            }
+
                 this.loading = true;
 
                 const url = FluentFormsGlobal.$rest.route('getSubmissions');
@@ -1141,7 +1154,7 @@
             (new ClipboardJS('.copy')).on('success', (e) => {
                 this.$copy();
             });
-            this.isCompact = localStorage.getItem('compactView') === 'true' ? true : false;
+            this.isCompact = ( localStorage.getItem('compactView') == 'true' || localStorage.getItem("compactView") === null) ? true : false;
             this.fieldsToExport = Object.keys(this.input_labels)
             this.shortcodesToExport = ['{submission.id}','{submission.created_at}','{submission.status}']
         },

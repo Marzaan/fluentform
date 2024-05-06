@@ -49,12 +49,18 @@ class Turnstile extends BaseComponent
             true
         );
 
+        $appearance = esc_attr(ArrayHelper::get($turnstile, 'appearance', 'always'));
+
+        if ('yes' == ArrayHelper::get($turnstile, 'invisible')) {
+            $appearance = 'interaction-only';
+        }
+
         $turnstileBlock = "<div
 		data-sitekey='" . esc_attr($siteKey) . "'
 		data-theme='" . esc_attr(ArrayHelper::get($turnstile, 'theme', 'auto')) . "'
 		id='fluentform-turnstile-{$form->id}'
 		class='ff-el-turnstile cf-turnstile'
-		data-callback='turnstileCallback'></div>";
+		data-appearance='" . $appearance . "'></div>";
 
         $label = '';
         if (! empty($data['settings']['label'])) {
@@ -66,11 +72,7 @@ class Turnstile extends BaseComponent
             $containerClass = 'ff-el-form-' . $data['settings']['label_placement'];
         }
 
-        if ('yes' == ArrayHelper::get($turnstile, 'invisible')) {
-            $el = "<div class='ff-el-input--content'><div data-fluent_id='" . $form->id . "' name='cf-turnstile-response' style='display: none'>{$turnstileBlock}</div></div>";
-        } else {
-            $el = "<div class='ff-el-input--content'><div data-fluent_id='" . $form->id . "' name='cf-turnstile-response'>{$turnstileBlock}</div></div>";
-        }
+        $el = "<div class='ff-el-input--content'><div data-fluent_id='" . $form->id . "' name='cf-turnstile-response'>{$turnstileBlock}</div></div>";
 
         $html = "<div class='ff-el-group " . esc_attr($containerClass) . "' >{$label}{$el}</div>";
     

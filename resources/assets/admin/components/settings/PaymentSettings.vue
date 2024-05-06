@@ -154,8 +154,8 @@
                                     <template slot="label">
                                         {{settings.stripe_custom_config.payment_mode | ucFirst}} {{ $t(' Publishable key') }}
                                     </template>
-                                    <el-input 
-                                        type="text" 
+                                    <el-input
+                                        type="text"
                                         v-model="settings.stripe_custom_config.publishable_key"
                                         :placeholder="$t('Publishable key')"/>
                                 </el-form-item>
@@ -212,7 +212,7 @@
                                     <el-radio label="custom">{{ $t('Custom PayPal ID') }}</el-radio>
                                 </el-radio-group>
                             </el-form-item>
-                            <template if="settings.paypal_account_type == 'custom'">
+                            <template v-if="settings.paypal_account_type == 'custom'">
                                 <el-form-item class="ff-form-item" label="">
                                     <template slot="label">
                                         {{ $t('Payment Mode') }}

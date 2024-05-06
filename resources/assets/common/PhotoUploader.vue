@@ -13,9 +13,9 @@
         <template v-else>
             <div @click="initUploader" class="el-button el-button--upload el-button--default is-plain">
                 <i class="el-icon el-icon-upload"></i>
-                <span>{{ $t('Upload Media') }}</span>
+                <span>{{ 'Upload Media' }}</span>
             </div>
-            <div class="mt-2" v-if="image_url.length > 0">
+            <div class="mt-2" v-if="image_url?.length > 0">
                 <div class="ff_file_upload_result">
                     <div class="ff_file_upload_preview">
                         <img :src="image_url"/>
@@ -49,17 +49,10 @@
         data() {
             return {
                 app_ready: false,
-                image_url: this.value || '',
                 design_mode_name: this.design_mode || 'small',
                 enable_clear_name: this.enable_clear,
-                image_name: '',
                 image_size: '',
                 for_editor_advance_option : this.for_advanced_option || false
-            }
-        },
-        watch: {
-            image_url() {
-                this.$emit('input', this.image_url);
             }
         },
         methods: {
@@ -68,29 +61,37 @@
                 const send_attachment_bkp = wp.media.editor.send.attachment;
                 wp.media.editor.send.attachment = function (props, attachment) {
                     that.image_url = attachment.url;
-                    that.handleImageName(attachment.url);
                     that.image_size = attachment.filesizeHumanReadable;
                     wp.media.editor.send.attachment = send_attachment_bkp;
                 };
                 wp.media.editor.open();
                 return false;
-            },
-            handleImageName(url) {
-                if (!url) url = this.image_url;
-                let name = url.substring(url.lastIndexOf("/")+1, url.length);
-                // 15 character for suitable visible name
-                if (name.length > 15) {
-                    name = name.slice(0, 15) + '...' + name.substring(name.lastIndexOf(".") - 2, name.length);
-                }
-                this.image_name = name;
             }
         },
+	    computed: {
+		    image_url : {
+				get() {
+					return this.value || '';
+				},
+			    set(value) {
+				    this.$emit('input', value);
+			    }
+		    },
+		    image_name() {
+			    let url = this.image_url;
+			    let name = url.substring(url.lastIndexOf("/")+1, url?.length);
+			    // 15 character for suitable visible name
+			    if (name?.length > 15) {
+				    name = name.slice(0, 15) + '...' + name.substring(name.lastIndexOf(".") - 2, name?.length);
+			    }
+				return name;
+		    }
+	    },
         mounted() {
             if (!window.wpActiveEditor) {
                 window.wpActiveEditor = null;
             }
             this.app_ready = true;
-            this.handleImageName()
         }
     }
 </script>

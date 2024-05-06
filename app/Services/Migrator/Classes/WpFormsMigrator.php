@@ -125,8 +125,7 @@ class WpFormsMigrator extends BaseMigrator
         $defaultConfirmation = array_pop($confirmationsFormatted);
         
         $notifications = $this->getNotifications($form);
-        
-        return [
+        $metas = [
             'formSettings'               => [
                 'confirmation' => $defaultConfirmation,
                 'restrictions' => $defaults['restrictions'],
@@ -137,6 +136,10 @@ class WpFormsMigrator extends BaseMigrator
             'notifications'              => $notifications,
             'confirmations'              => $confirmationsFormatted,
         ];
+        if ($webhooks = $this->getWebhooks($form)) {
+            $metas['webhooks'] = $webhooks;
+        }
+        return $metas;
     }
     
     protected function getFormId($form)
@@ -234,6 +237,12 @@ class WpFormsMigrator extends BaseMigrator
             }
             if ($submission->date_modified) {
                 $entry['updated_at'] = $submission->date_modified;
+            }
+            if ($submission->starred) {
+                $entry['is_favourite'] = $submission->starred;
+            }
+            if ($submission->viewed) {
+                $entry['status'] = 'read';
             }
             $entries[] = $entry;
         }
@@ -591,6 +600,88 @@ class WpFormsMigrator extends BaseMigrator
             ];
         }
         return $notificationsFormatted;
+    }
+
+    /**
+     * Get webhooks feeds
+     *
+     * @param array $form
+     * @return array
+     */
+    private function getWebhooks($form)
+    {
+        $webhooksFeeds = [];
+        foreach (ArrayHelper::get($form, 'settings.webhooks', []) as $webhook) {
+            list($headers, $headersKeysStatus, $headersValuesStatus) = $this->getResolveMappingFields(ArrayHelper::get($webhook, 'headers', []), $form);
+
+            $body = ArrayHelper::get($webhook, 'body', []);
+            // ff webhook body parameter doesn't support custom type fields
+            // remove custom type fields, wpforms add "custom_" prefix on key for custom type value
+            $body = array_filter($body, function ($key) {
+                return !(strpos($key, 'custom_') !== false);
+            }, ARRAY_FILTER_USE_KEY);
+            list($body) = $this->getResolveMappingFields($body, $form);
+
+            $webhooksFeeds[] = [
+                'name'                 => ArrayHelper::get($webhook, 'name', ''),
+                'request_url'          => ArrayHelper::get($webhook, 'url', ''),
+                'with_header'          => count($headers) > 0 ? 'yup' : 'nop',
+                'request_method'       => strtoupper(ArrayHelper::get($webhook, 'method', 'GET')),
+                'request_format'       => strtoupper(ArrayHelper::get($webhook, 'format', 'FORM')),
+                'request_body'         => 'selected_fields',
+                'custom_header_keys'   => $headersKeysStatus,
+                'custom_header_values' => $headersValuesStatus,
+                'fields'               => $body,
+                'request_headers'      => $headers,
+                'conditionals'         => $this->getConditionals($webhook, $form),
+                'enabled'              => ArrayHelper::isTrue($form, 'settings.webhooks_enable')
+            ];
+        }
+        return $webhooksFeeds;
+    }
+
+    /**
+     * Get resolved mapping fields
+     *
+     * @param array $fields
+     * @param array $form
+     * @return array
+     */
+    private function getResolveMappingFields($fields, $form)
+    {
+        $mapping = [];
+        $mappingKeysStatus = [];
+        $mappingValuesStatus = [];
+        foreach ($fields as $key => $value) {
+            // wpforms add "custom_" prefix on key for custom type value
+            if ((strpos($key, 'custom_') !== false) || is_array($value)) {
+                $key = str_replace('custom_', '', $key);
+                // ff not support secure value, when value is secure decrypt it's by wpforms helper
+                if (ArrayHelper::isTrue($value, 'secure') && method_exists('\WPForms\Helpers\Crypto', 'decrypt')) {
+                    $value = ArrayHelper::get($value, 'value', '');
+                    if ($decryptValue = \WPForms\Helpers\Crypto::decrypt($value)) {
+                        $value = $decryptValue;
+                    }
+                } else {
+                    $value = ArrayHelper::get($value, 'value', '');
+                }
+                $mappingKeysStatus[] = true;
+                $mappingValuesStatus[] = true;
+            } else {
+                list ($fieldName) = $this->getFormFieldName($value, $form);
+                if (!$fieldName) {
+                    continue;
+                }
+                $value = "{inputs.$fieldName}";
+                $mappingKeysStatus[] = false;
+                $mappingValuesStatus[] = false;
+            }
+            $mapping[] = [
+                'key'   => $key,
+                'value' => $value
+            ];
+        }
+        return [$mapping, $mappingKeysStatus, $mappingValuesStatus];
     }
 
     /**

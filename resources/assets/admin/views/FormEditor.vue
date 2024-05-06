@@ -729,12 +729,20 @@ export default {
                 });
                 return false;
             }
-            if (this.isAutoloadCaptchaEnabled && (item.element === 'recaptcha' || item.element === 'hcaptcha' || item.element === 'turnstile')) {
+
+            const captchas = ['recaptcha', 'hcaptcha', 'turnstile'];
+            if (this.isAutoloadCaptchaEnabled && captchas.includes(item.element)) {
                 this.$message({
                     message: this.$t('Captcha has been enabled globally.'),
                     type: 'warning',
                 });
                 return false;
+            }
+
+            let isCaptchaExists = type != 'existingElement' && this.isCaptchaExists(captchas, item.element);
+
+            if (isCaptchaExists) {
+                return;
             }
 
             item.uniqElKey = 'el_' + new Date().getTime();
@@ -770,12 +778,19 @@ export default {
                 return;
             }
 
-            if (this.isAutoloadCaptchaEnabled && (freshCopy.element === 'recaptcha' || freshCopy.element === 'hcaptcha' || freshCopy.element === 'turnstile')) {
+            const captchas = ['recaptcha', 'hcaptcha', 'turnstile'];
+            if (this.isAutoloadCaptchaEnabled && captchas.includes(freshCopy.element)) {
                 this.$message({
                     message: this.$t('Captcha has been enabled globally.'),
                     type: 'warning',
                 });
 
+                return;
+            }
+
+            let isCaptchaExists = this.isCaptchaExists(captchas, item.element);
+
+            if (isCaptchaExists) {
                 return;
             }
 
@@ -994,6 +1009,25 @@ export default {
         formRenameSuccess(title) {
             this.form.title = title;
             jQuery('#js-ff-nav-title').find('div').text(title);
+        },
+
+        /*
+        * checking if captcha is already exists in the Editor
+        */
+        isCaptchaExists(captchas, itemEl) {
+            let isCaptchaExists = false;
+            this.dropzone.forEach(el => {
+                if (captchas.includes(el.element) && captchas.includes(itemEl)) {
+                     this.$message({
+                        message: this.$t('A captcha has been already added.'),
+                        type: 'warning',
+                    });
+
+                    isCaptchaExists = true;
+                }
+            });
+
+            return isCaptchaExists;
         }
     },
 
@@ -1045,6 +1079,13 @@ export default {
         (new ClipboardJS('.copy')).on('success', (e) => {
             this.$copy();
         });
+
+        if (this.isAutoloadCaptchaEnabled) {
+            const captchas = ['recaptcha', 'hcaptcha', 'turnstile'];
+            setTimeout(() => {
+                this.form.dropzone = this.form.dropzone.filter(el => !captchas.includes(el.element));
+            }, 100);
+        }
     }
 };
 </script>

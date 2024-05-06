@@ -3,7 +3,7 @@
         <el-form-item class="ff-form-item">
             <el-label slot="label" :label="$t('Layout Type')" :helpText="$t('Select the layout that you want to show for this input')"></el-label>
             <el-radio-group class="ff_iconed_radios" v-model="pref.layout">
-                <el-radio v-for="(layout, layoutName) in layouts" :key="layoutName" :label="layoutName">
+                <el-radio v-for="(layout, layoutName) in layouts" :key="layoutName" :label="$t(layoutName)">
                     <i :class="layout.icon" />
                 </el-radio>
             </el-radio-group>

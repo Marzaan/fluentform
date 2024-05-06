@@ -10,6 +10,7 @@ use FluentForm\App\Modules\Form\FormFieldsParser;
 use FluentForm\App\Modules\HCaptcha\HCaptcha;
 use FluentForm\App\Modules\ReCaptcha\ReCaptcha;
 use FluentForm\App\Modules\Turnstile\Turnstile;
+use FluentForm\App\Services\FormBuilder\Components\SelectCountry;
 use FluentForm\Framework\Foundation\App;
 use FluentForm\Framework\Helpers\ArrayHelper as Arr;
 use FluentForm\Framework\Validator\ValidationException;
@@ -128,9 +129,9 @@ class FormValidationService
             $field['data_key'] = $fieldKey;
             $inputName = Arr::get($field, 'raw.attributes.name');
             $field['name'] = $inputName;
-    
+            $error = $this->validateInput($field, $formData, $this->form);
             $error = apply_filters_deprecated('fluentform_validate_input_item_' . $field['element'], [
-                    '',
+                    $error,
                     $field,
                     $formData,
                     $fields,
@@ -201,6 +202,11 @@ class FormValidationService
         }
         
         return true;
+    }
+
+    protected function validateInput($field, $formData, $form, $fieldName = '', $inputValue = [])
+    {
+        return Helper::validateInput($field, $formData, $form, $fieldName, $inputValue);
     }
     
     /**
@@ -303,10 +309,13 @@ class FormValidationService
                     array_intersect_key($this->formData, $fields)
                 );
                 if (!count(Helper::arrayFilterRecursive($filteredFormData))) {
+                    $defaultMessage = __('Sorry! You can\'t submit an empty form.','fluentform');
+                    $customMessage = Arr::get($settings, 'message');
+                    
                     throw new ValidationException('', 422, null,  [
                         'errors' => [
                             'restricted' => [
-                                __(!($m = Arr::get($settings, 'message')) ? 'Sorry! You can\'t submit an empty form.' : $m, 'fluentform'),
+                                !empty($customMessage) ? $customMessage : $defaultMessage,
                             ],
                         ],
                     ]);

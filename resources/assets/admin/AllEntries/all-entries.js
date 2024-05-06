@@ -24,6 +24,10 @@ import {
     DatePicker,
     Skeleton,
     SkeletonItem,
+    Dialog,
+    Form,
+    FormItem,
+    Tooltip
 } from 'element-ui';
 
 Vue.use(Loading.directive);
@@ -49,9 +53,15 @@ Vue.use(TableColumn);
 Vue.use(DatePicker);
 Vue.use(Skeleton);
 Vue.use(SkeletonItem);
+Vue.use(Dialog);
+Vue.use(Form);
+Vue.use(FormItem);
+Vue.use(Tooltip);
 
 import App from './App.vue';
 import globalSearch from '../global_search';
+import notifier from '../notifier';
+
 locale.use(lang);
 
 Vue.mixin({
@@ -62,7 +72,8 @@ Vue.mixin({
                 return transString;
             }
             return str;
-        }
+        },
+        ...notifier
     },
 });
 new Vue({

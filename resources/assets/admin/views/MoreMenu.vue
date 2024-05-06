@@ -22,7 +22,7 @@
                     <h5 class="mb-2">{{$t('Confirmation')}}</h5>
                     <p>{{ $t('Are you sure you want to convert this form?') }}</p>
                 </div>
-                
+
                 <template v-if="!is_conversion_form">
                     <el-alert
                         class="mt-4"
@@ -65,13 +65,11 @@ export default {
             form_id: window.FluentFormApp.form_id,
             visible: false,
             fields: [
-                "Name Fields",
                 "Section Break",
                 "Shortcode",
                 "Action Hook",
                 "Form Step",
                 "Custom Submit Button",
-                "Range Slider Field",
                 "Net Promoter Score",
                 "Chained Select Field",
                 "Color Picker Field",

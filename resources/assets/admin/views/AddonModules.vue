@@ -47,10 +47,10 @@
                                 </template>
                                 <div v-else class="d-flex items-center">
                                      <el-switch
-                                        @change="saveStatus(addonKey)" 
-                                        active-value="yes" 
-                                        inactive-value="no" 
-                                        v-model="addon.enabled" 
+                                        @change="saveStatus(addonKey)"
+                                        active-value="yes"
+                                        inactive-value="no"
+                                        v-model="addon.enabled"
                                     />
                                     <span class="ml-2 fs-15">
                                         {{addon.enabled == 'yes' ? $t('Enabled') : $t('Disabled')}}
@@ -92,7 +92,7 @@
                     let filteredAddons = {};
                     each(addons, (addOn, addOnKey) => {
                         let obString = JSON.stringify(addOn);
-                        if(obString.indexOf(this.search) !== -1) {
+                        if(obString.toLowerCase().indexOf(this.search.toLowerCase()) !== -1) {
                             filteredAddons[addOnKey] = addOn;
                         }
                     });

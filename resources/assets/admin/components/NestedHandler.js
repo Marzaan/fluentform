@@ -210,20 +210,46 @@ export default {
             this.item.columns.forEach((item, i) => {
                 item.width = this.getNumber(event[i].size);
             })
+            // Update modified flag
+            const perColumnWidth = this.getNumber(100 / this.item.columns.length);
+            this.item.modified = false;
+            this.item.columns.forEach(column => {
+                if ( column.width != perColumnWidth ){
+                    this.item.modified = true;
+                }
+            })
         },
 
         resetContainer() {
             const perColumnWidth = this.getNumber(100 / this.item.columns.length);
-
             this.item.columns.forEach(column => {
                 column.width = perColumnWidth;
             })
+            this.item.modified = false;
         },
 
         getNumber(value) {
             value = value || 0;
 
             return parseFloat(parseFloat(value).toFixed(2));
+        },
+        maybeHideContainerActions(e) {
+            let element = e.target;
+            if (element.classList.contains('hover-action-middle')) {
+                const topRightElements = document.querySelectorAll('.hover-action-top-right');
+                topRightElements.forEach((el) => {
+                    el.style.opacity = '0';
+                });
+            }
+        },
+        maybeShowContainerActions(e) {
+            let element = e.target;
+            if (element.classList.contains('hover-action-middle')) {
+                const topRightElements = document.querySelectorAll('.hover-action-top-right');
+                topRightElements.forEach((el) => {
+                    el.style.opacity = '1';
+                });
+            }
         }
     }
 };

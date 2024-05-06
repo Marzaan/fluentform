@@ -20,7 +20,7 @@
                             <iframe
                                 style="width: 100%; height: 300px; border-radius: 10px;"
                                 :src="modal.video"
-                                title="YouTube video player"
+                                :title="$t('YouTube video player')"
                                 frameborder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowfullscreen

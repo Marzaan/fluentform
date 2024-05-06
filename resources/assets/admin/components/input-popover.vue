@@ -67,15 +67,15 @@ export default {
     },
     methods: {
         insertShortcode(codeString) {
-            if (this.model == undefined) {
-                this.model = '';
-            }
             this.model += codeString.replace(/param_name/, this.attrName);
         }
     },
     computed : {
 		model : {
 			get() {
+				if (this.value === undefined || this.value === null) {
+					return '';
+				}
 				return this.value;
             },
             set(value) {

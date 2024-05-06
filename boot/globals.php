@@ -324,6 +324,21 @@ function fluentform_options_sanitize($options)
     return $options;
 }
 
+function fluentform_iframe_srcdoc_sanitize($value)
+{
+    $tags = wp_kses_allowed_html('post');
+    $tags['style'] = [
+        'types' => [],
+    ];
+    // Check if decoding is necessary
+    if (strpos($value, '&') !== false) {
+        // Decode HTML entities
+        $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $value = stripslashes($value);
+    }
+    return wp_kses($value, $tags);
+}
+
 function fluentform_sanitize_html($html)
 {
     if (!$html) {
@@ -344,7 +359,9 @@ function fluentform_sanitize_html($html)
         'width'           => [],
         'height'          => [],
         'src'             => [],
-        'srcdoc'          => [],
+        'srcdoc'          => [
+            'value_callback' => 'fluentform_iframe_srcdoc_sanitize'
+        ],
         'title'           => [],
         'frameborder'     => [],
         'allow'           => [],

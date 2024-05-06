@@ -6,6 +6,7 @@ use FluentForm\App\Services\Migrator\Classes\NinjaFormsMigrator;
 use FluentForm\App\Services\Migrator\Classes\CalderaMigrator;
 use FluentForm\App\Services\Migrator\Classes\GravityFormsMigrator;
 use FluentForm\App\Services\Migrator\Classes\WpFormsMigrator;
+use FluentForm\App\Services\Migrator\Classes\ContactForm7Migrator;
 class Bootstrap
 {
     protected $importer;
@@ -47,6 +48,12 @@ class Bootstrap
                 'key'  => 'wpforms',
             ];
         }
+        if ((new ContactForm7Migrator())->exist()) {
+            $migratorLinks[] = [
+                'name' => 'Contact Form 7',
+                'key'  => 'contactform7',
+            ];
+        }
         return $migratorLinks;
 
     }
@@ -67,6 +74,9 @@ class Bootstrap
                 break;
             case 'wpforms':
                 $this->importer = new WpFormsMigrator();
+                break;
+            case 'contactform7':
+                $this->importer = new ContactForm7Migrator();
                 break;
             default:
                 wp_send_json([

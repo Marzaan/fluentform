@@ -16,7 +16,7 @@
                                     rel="noopener" 
                                     :href="final_share_url" 
                                     class="el-button el-button--info el-button--icon el-button--medium el-button--soft"
-                                    title="Share"
+                                    :title="$t('Share')"
                                 >
                                     <i class="el-icon-share"></i>
                                 </a>
@@ -26,7 +26,7 @@
                                     v-show="share_url && settings.status == 'yes'" 
                                     class="el-button el-button--primary el-button--icon el-button--medium el-button--soft"
                                     @click="fullScreen"
-                                    title="Toggle Fullscreen"
+                                    :title="$t('Toggle Fullscreen')"
                                 >
                                     <i class="el-icon-full-screen"></i>
                                 </a>
@@ -48,7 +48,7 @@
                 <card-body>
                     <el-checkbox 
                         v-model="settings.status" 
-                        true-label="yes" 
+                        true-label="yes"
                         @change="offFullScreen" 
                         false-label="no"
                     >
@@ -189,7 +189,7 @@
                                                 <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
                                                     <div slot="content">
                                                         <p>
-                                                            {{ $t('A Salt to secure your share url so nobody can guess by form ID.') }}
+                                                            {{ $t('Add a Security Code to make your shareable URL extra secure.') }}
                                                         </p>
                                                     </div>
                                                     <i class="ff-icon ff-icon-info-filled text-primary"></i>

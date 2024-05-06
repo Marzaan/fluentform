@@ -32,6 +32,20 @@ ol{
   font-size: 15px;
 }
 
+#ff_preview_top {
+  overflow: hidden;
+}
+
+#ff_form_styler .el-tabs--top.el-tabs--border-card {
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.ff_form_preview{
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
 .ff_preview_menu {
   display: flex;
   align-items: center;
@@ -393,6 +407,33 @@ ol{
       .el-tabs__item{
         margin-right: 0 !important;
       }
+    }
+  }
+}
+
+
+// form style template
+.preview-form-style-template{
+  &-wrap{
+    padding: 20px 20px 20px 20px;
+    border-bottom: 1px solid #ececec;
+  }
+  &-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+    h5{
+      margin-bottom: 0;
+      font-size: 18px;
+      text-transform: capitalize;
+      font-weight: 600;
+    }
+  }
+  &-selector{
+    .el-select{
+      width: 100%;
     }
   }
 }

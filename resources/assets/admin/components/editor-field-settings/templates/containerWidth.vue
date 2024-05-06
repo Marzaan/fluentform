@@ -18,6 +18,12 @@
             </template>
 
            <p>{{ listItem.width_limitation_msg }}</p>
+
+           <el-form-item>
+                <elLabel slot="label" :label="$t('Auto Width')" :helpText="$t('Enable automatic width calculation for columns')"></elLabel>
+                <el-radio v-model="editItem.settings.is_width_auto_calc" :label="true">{{ $t('Yes') }}</el-radio>
+                <el-radio v-model="editItem.settings.is_width_auto_calc" :label="false">{{ $t('No') }}</el-radio>
+            </el-form-item>
         </template>
     </div>
 </template>
@@ -35,7 +41,7 @@
         data() {
             return {
                 columns: JSON.parse(JSON.stringify(this.editItem.columns)),
-                minWidth: 10
+                minWidth: 10,
             }
         },
 
@@ -51,26 +57,39 @@
         methods: {
             set(value, index) {
                 value = this.getNumber(value);
-                
+
                 if (value < 10) {
                     return;
                 }
 
                 const editingColumn = this.editItem.columns[index];
                 const targetColumn = index ? this.editItem.columns[index - 1] : this.editItem.columns[1];
-                const availableWdith = targetColumn.width + editingColumn.width;
-                const breakingPoint = this.getNumber(availableWdith - this.minWidth);
-                
-                value = value >= breakingPoint ? breakingPoint : value;
+
+                if (!this.editItem.settings.is_width_auto_calc) {
+                    const availableWdith = targetColumn.width + editingColumn.width;
+                    const breakingPoint = this.getNumber(availableWdith - this.minWidth);
+
+                    value = value >= breakingPoint ? breakingPoint : value;
+
+                    targetColumn.width = this.getNumber(availableWdith - value);
+                }
 
                 editingColumn.width = value;
-                targetColumn.width = this.getNumber(availableWdith - value);
                 this.columns[index].width = value;
+                this.checkIfModified()
+            },
+            checkIfModified(){
+                const perColumnWidth = this.getNumber(100 / this.editItem.columns.length);
+                this.editItem.modified = false;
+                this.editItem.columns.forEach(column => {
+                    if ( column.width != perColumnWidth ){
+                        this.editItem.modified = true;
+                    }
+                })
             },
 
             getNumber(value) {
                 value = value || 0;
-
                 return +(Math.round(value + "e+2")  + "e-2");
             }
         }

@@ -5,7 +5,7 @@
 <head>
     <meta name="viewport" content="width=device-width"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Email Summary</title>
+    <title><?php _e('Email Summary', 'fluentform'); ?></title>
     <style type="text/css">
         .summary_table {
             width: 100%;

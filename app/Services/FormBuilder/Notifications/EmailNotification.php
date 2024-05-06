@@ -103,7 +103,7 @@ class EmailNotification
                     'component'        => 'EmailNotification',
                     'status'           => 'error',
                     'title'            => 'Email sending skipped',
-                    'description'      => "Email skipped to send because email/subject may not valid.<br />Subject: {$notification['subject']}. <br/>Email: " . implode(', ', $sendAddresses),
+                    'description'      => "Email skipped to send because email/subject may not valid.<br />Subject: {$notification['subject']}. <br/>Email: " . $sendAddresses,
                 ]);
             }
             return null;
@@ -166,41 +166,41 @@ class EmailNotification
                 }
             }, 10, 1);
         }
-        $result = false;
-        foreach ($sendAddresses as $address) {
-            $address =  apply_filters_deprecated(
-                'fluentform_email_to',
-                [
-                    $address,
-                    $notification,
-                    $submittedData,
-                    $form
-                ],
-                FLUENTFORM_FRAMEWORK_UPGRADE,
-                'fluentform/email_to',
-                'Use fluentform/email_to instead of fluentform_email_to.'
-            );
-            $emailTo = apply_filters('fluentform/email_to', $address, $notification, $submittedData, $form);
 
-            do_action('fluentform/log_data', [
-                'parent_source_id' => $form->id,
-                'source_type'      => 'submission_item',
-                'source_id'        => $entryId,
-                'component'        => 'EmailNotification',
-                'status'           => 'info',
-                'title'            => 'Email sending initiated',
-                'description'      => 'Email Notification broadcasted to ' . $address . ".<br />Subject: {$subject}",
-            ]);
+        $sendAddresses =  apply_filters_deprecated(
+            'fluentform_email_to',
+            [
+                $sendAddresses,
+                $notification,
+                $submittedData,
+                $form
+            ],
+            FLUENTFORM_FRAMEWORK_UPGRADE,
+            'fluentform/email_to',
+            'Use fluentform/email_to instead of fluentform_email_to.'
+        );
 
-            $result = $this->broadCast([
-                'email'       => $emailTo,
-                'subject'     => $subject,
-                'body'        => $emailBody,
-                'headers'     => $headers,
-                'attachments' => $attachments,
-            ]);
+        $emailTo = apply_filters('fluentform/email_to', $sendAddresses, $notification, $submittedData, $form);
+        if (is_array($sendAddresses)) {
+            $sendAddresses = implode(', ', $sendAddresses);
         }
-        return $result;
+        do_action('fluentform/log_data', [
+            'parent_source_id' => $form->id,
+            'source_type'      => 'submission_item',
+            'source_id'        => $entryId,
+            'component'        => 'EmailNotification',
+            'status'           => 'info',
+            'title'            => 'Email sending initiated',
+            'description'      => 'Email Notification broadcasted to ' . $sendAddresses . ".<br />Subject: {$subject}",
+        ]);
+
+        return $this->broadCast([
+            'email'       => $emailTo,
+            'subject'     => $subject,
+            'body'        => $emailBody,
+            'headers'     => $headers,
+            'attachments' => $attachments,
+        ]);
     }
 
     private function broadCast($data)
@@ -219,17 +219,23 @@ class EmailNotification
         );
     }
 
+    /**
+     * Get email addresses
+     *
+     * @param array     $notification  [Notification settings from form meta]
+     * @param array     $submittedData [User submitted form data]
+     *
+     * @return string $sendAddresses [Email address or addresses as comma separated string]
+     */
     private function getSendAddresses($notification, $submittedData)
     {
-        $sendAddresses = [
-            ArrayHelper::get($notification, 'sendTo.email'),
-        ];
+        $sendAddresses = ArrayHelper::get($notification, 'sendTo.email');
 
         if ('field' == ArrayHelper::get($notification, 'sendTo.type') && ! empty($notification['sendTo']['field'])) {
-            $sendAddresses = [
-                ArrayHelper::get($submittedData, $notification['sendTo']['field']),
-            ];
-            $sendAddresses = array_filter($sendAddresses, 'is_email');
+            $sendAddresses = ArrayHelper::get($submittedData, $notification['sendTo']['field'], '');
+            if (!is_email($sendAddresses)) {
+                return '';
+            }
         }
 
         if ('routing' != ArrayHelper::get($notification, 'sendTo.type')) {
@@ -239,10 +245,15 @@ class EmailNotification
         $routings = ArrayHelper::get($notification, 'sendTo.routing');
         $validAddresses = [];
         foreach ($routings as $routing) {
-            $inputValue = ArrayHelper::get($routing, 'input_value');
-            if (! $inputValue || ! is_email($inputValue)) {
+            $emailAddresses = ArrayHelper::get($routing, 'input_value');
+    
+            if (!$emailAddresses || trim($emailAddresses) === '') {
                 continue;
             }
+            $emailAddresses = array_map('trim', explode(',', $emailAddresses));
+            $emailAddresses = array_filter($emailAddresses, function($email) {
+                return is_email($email);
+            });
             $condition = [
                 'conditionals' => [
                     'status'     => true,
@@ -253,11 +264,10 @@ class EmailNotification
                 ],
             ];
             if (\FluentForm\App\Services\ConditionAssesor::evaluate($condition, $submittedData)) {
-                $validAddresses[] = $inputValue;
+                $validAddresses = array_merge($validAddresses, $emailAddresses);
             }
         }
-
-        return $validAddresses;
+        return implode(',', $validAddresses);
     }
 
     /**
@@ -387,7 +397,7 @@ class EmailNotification
 
         $fromEmail = $notification['fromEmail'];
 
-        if (! is_email($fromEmail)) {
+        if (!is_string($fromEmail) || ! is_email($fromEmail)) {
             $fromEmail = false;
         }
 

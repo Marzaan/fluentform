@@ -3,7 +3,7 @@
     <div class="ff_block_item" v-if="roles.length">
         <el-skeleton :loading="loading" animated :rows="4">
             <h6 class="ff_block_title mb-1">{{ $t('Role Based') }}</h6>
-            <p class="ff_block_text">{{ $t('Administrators have full access to Fluent Forms.By selecting additional roles bellow, you can give access to other user roles.') }}</p>
+            <p class="ff_block_text">{{ $t('Administrators have full access to Fluent Forms. By selecting additional roles below, you can give access to other user roles.') }}</p>
             <div class="ff_block_item_body mt-3">
                 <div class="mb-3">
                     <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">

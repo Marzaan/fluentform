@@ -1,35 +1,50 @@
 <template>
     <div class="entry-repeat-field">
-        <table v-if="appReady" class="editor_table">
-            <thead>
-            <tr>
-                <th v-for="(fieldItem, fieldKey) in field.raw.fields" :key="fieldKey">{{fieldItem.settings.label}}</th>
-                <th>{{ $t('Action') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(rowValue, rowIndex) in formFields" :key="rowIndex">
-                <td v-for="(fieldItem, fieldIndex) in field.raw.fields" :key="fieldIndex">
-                    <el-input 
-                        v-model="model[fieldIndex][rowIndex]" 
-                        size="mini"
-                        :placeholder="fieldItem.settings.label" 
-                        :type="fieldItem.attributes.type"/>
-                </td>
-                <td>
-                    <el-button @click="removeRow(rowIndex)" size="mini" icon="el-icon-minus"></el-button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <el-button @click="initNewRow()" type="success" size="mini" icon="el-icon-plus" v-if="!rowLength">{{ $t('Add Item') }}
+	    <template v-if="hasRepeaterValue" >
+	        <table class="editor_table">
+	            <thead>
+	            <tr>
+	                <th v-for="(fieldItem, fieldKey) in field.raw.fields" :key="fieldKey">{{fieldItem.settings.label}}</th>
+	                <th>{{ $t('Action') }}</th>
+	            </tr>
+	            </thead>
+	            <tbody>
+	            <tr v-for="(rowValue, rowIndex) in repeaters" :key="rowIndex">
+	                <td v-for="(fieldItem, fieldIndex) in field.raw.fields" :key="fieldIndex">
+		                <el-select
+			                v-if="fieldItem.attributes.type === 'select'"
+			                v-model="model[rowIndex][fieldIndex]" size="mini"
+		                >
+			                <el-option
+				                v-for="option in fieldItem.settings.advanced_options"
+				                :key="option.value"
+				                :label="option.label"
+				                :value="option.value">
+			                </el-option>
+		                </el-select>
+	                    <el-input
+		                    v-else
+	                        v-model="model[rowIndex][fieldIndex]"
+	                        size="mini"
+	                        :placeholder="fieldItem.settings.label"
+	                        :type="fieldItem.attributes.type"/>
+	                </td>
+	                <td>
+		                <div class="action-buttons-group">
+			                <el-button @click="addRow(rowIndex)" size="mini" icon="el-icon-plus"></el-button>
+			                <el-button @click="removeRow(rowIndex)" size="mini" icon="el-icon-minus"></el-button>
+		                </div>
+	                </td>
+	            </tr>
+	            </tbody>
+	        </table>
+	    </template>
+        <el-button v-else @click="initNewRow()" type="success" size="mini" icon="el-icon-plus">{{ $t('Add Item') }}
         </el-button>
-        <el-button v-else @click="addRow()" size="mini" type="success" icon="el-icon-plus">{{ $t('Add Row') }}</el-button>
     </div>
 </template>
 
 <script type="text/babel">
-    import each from 'lodash/each';
 
     export default {
         name: 'multi-repeat-line',
@@ -46,29 +61,26 @@
             }
         },
         methods: {
-            addRow() {
+            addRow(index) {
                 if (!this.model) {
                     this.initNewRow();
                 }
-                this.model[0].push('');
+                this.model.splice(index + 1, 0, new Array(this.field.raw.fields.length).fill(''));
             },
             removeRow(index) {
-                each(this.model, (item) => {
-                    this.$delete(item, index);
-                });
+	            this.$delete(this.model, index);
             },
             initNewRow() {
-                let valueLength = this.field.raw.fields.length;
-                this.model = new Array(valueLength).fill(['']);
+                this.model = [new Array(this.field.raw.fields.length).fill('')];
             }
         },
         computed: {
 
-            formFields() {
+            repeaters() {
                 // find the rows
-                var rows = 0;
+                var rows = 1;
                 if (this.model && this.model[0]) {
-                    rows = this.model[0].length;
+                    rows = this.model.length;
                 }
 
                 var columns = this.field.raw.fields.length;
@@ -82,35 +94,9 @@
                 return x;
             },
 
-            rowLength() {
-                var length = 0;
-                if (this.model && this.model[0]) {
-                    length = this.model[0].length;
-                }
-                return new Array(length).fill('');
+            hasRepeaterValue() {
+                return (this.model && typeof this.model === 'object' && this.model.length);
             }
-        },
-        mounted() {
-            this.appReady = true;
-            if (!this.model || typeof this.model != 'object') {
-                this.initNewRow();
-            } else {
-                // value length
-                var valueLength = 0;
-                if (this.value && this.value[0]) {
-                    valueLength = this.value.length;
-                }
-                let itemLength = this.field.raw.fields.length;
-
-                if (itemLength > valueLength) {
-                    let moreItem = itemLength - valueLength;
-                    each(new Array(moreItem).fill(''), (item) => {
-                        this.value.push([])
-                    });
-                }
-            }
-
-            this.appReady = true;
         }
     }
 </script>

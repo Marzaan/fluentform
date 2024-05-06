@@ -17,6 +17,9 @@ class Duplicator
 
                 continue;
             }
+            if ("ffc_form_settings_generated_css" == $meta->meta_key || "ffc_form_settings_meta" == $meta->meta_key) {
+                $meta->value = str_replace('ff_conv_app_' . $existingForm->id, 'ff_conv_app_' . $form->id, $meta->value);
+            }
 
             $form->formMeta()->create([
                 'meta_key' => $meta->meta_key,
@@ -81,6 +84,7 @@ class Duplicator
                 $pdfData = [
                     'meta_key' => $pdf_feed->meta_key,
                     'value'    => $pdf_feed->value,
+                    'form_id'  => $form->id,
                 ];
                 $pdfFeedMap[$pdf_feed->id] = $form->formMeta()->insertGetId($pdfData);
             }

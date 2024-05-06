@@ -108,6 +108,9 @@ div.updated{
 .w-100{
   width: 100% !important;
 }
+.ff-mw-100{
+  max-width: 100% !important;
+}
 .h-100{
   height: 100% !important;
 }
@@ -428,17 +431,15 @@ a.lead-text{
       justify-content: space-between;
     }
     .plugin-name {
-      //margin-right: 32px;
       height: 30px;
       img {
         height: 100%;
       }
     }
   .global-search-menu-button {
-    //color: #9A9FA5;
     color: #3c3c3cb3;
     background-color: transparent;
-    padding: 0 5px;
+    padding: 0 0 0 5px;
     display: inline-block;
     font-size: 15px;
     font-weight: normal;
@@ -976,6 +977,7 @@ label.el-radio, label.el-checkbox {
   display: flex;
   width: 100%;
   min-height: 550px;
+  position: relative;
   &_sidebar {
     flex-shrink: 0;
     background-color: $white;
@@ -991,7 +993,14 @@ label.el-radio, label.el-checkbox {
     overflow-y: scroll;
   }
 }
+
 // global setting
+.ff_global_setting_wrap{
+  .ff_layout_section_sidebar{
+   height: 100%;
+  } 
+}
+
 .ff_global_settings_option{
   overflow-y: scroll;
   height: 110vh;
@@ -1141,6 +1150,12 @@ label.el-radio, label.el-checkbox {
   }
 }
 
+.ff-form-setting-label-width{
+  .el-form-item__label{
+    width: 390px;
+  }
+}
+
 .el-switch{
   input{
     border: 0;
@@ -1199,6 +1214,8 @@ label.el-radio, label.el-checkbox {
       margin: 0;
       border-color: $--color-primary-light-9;
       border-radius: 6px;
+      min-height: 30px;
+      line-height: 1;
       &:hover{
         background-color: $--color-primary;
         color: $--color-white;
@@ -1410,6 +1427,7 @@ label.el-radio, label.el-checkbox {
   display: inline-flex;
   align-items: center;
   margin: -6px;
+  flex-wrap: wrap;
   > * {
     padding: 6px;
     margin-bottom: 0;
@@ -1904,4 +1922,22 @@ label.el-radio, label.el-checkbox {
     -webkit-transform: translate(0, 14px);
     opacity: 0
 }
+}
+
+.ff_sidebar_toggle{
+  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  position: absolute;
+  right: -21px;
+  background: #fff;
+  border: 1px solid #ddd;
+  top: 15px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+  display: none;
 }

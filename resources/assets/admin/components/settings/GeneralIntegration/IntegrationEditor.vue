@@ -100,6 +100,7 @@
                                             :settings="settings"
                                             :editorShortcodes="editorShortcodes"
                                             :merge_model="settings[field.key]"
+                                            @merge-model="setMergeModel(field.key)"
                                             :merge_fields="merge_fields"/>
                                 </template>
 
@@ -524,6 +525,9 @@
                     })
                     .finally(() => this.saving = false);
             },
+            setMergeModel(key) {
+                this.settings[key] = {};
+            }
         },
         mounted() {
             this.loadIntegrationSettings();

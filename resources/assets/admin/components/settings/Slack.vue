@@ -15,7 +15,7 @@
 
                     <template v-if="slack.enabled">
                         <el-form-item class="ff-form-item" :label="$t('Slack Title')">
-                            <el-input placeholder="optional" v-model="slack.textTitle"></el-input>
+                            <el-input :placeholder="$t('optional')" v-model="slack.textTitle"></el-input>
                         </el-form-item>
 
                         <el-form-item class="conditional-items ff-form-item">
@@ -63,7 +63,7 @@
                         </el-form-item>
 
                         <el-form-item class="ff-form-item" :label="$t('Slack Footer message')">
-                            <el-input placeholder="Default is 'fluentform'" v-model="slack.footerText"></el-input>
+                            <el-input :placeholder="$t(`Default is 'fluentform'`)" v-model="slack.footerText"></el-input>
                         </el-form-item>
                     </template>
 

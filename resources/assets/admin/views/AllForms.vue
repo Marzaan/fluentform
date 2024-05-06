@@ -18,9 +18,9 @@
                                 v-for="(status, status_key) in form_statuses"
                                 :key="status_key"
                                 :value="status_key"
-                                :label="status"
+                                :label="$t(status)"
                             >
-                                {{status}}
+                                {{ $t(status) }}
                             </el-option>
                         </el-select>
                     </btn-group-item>
@@ -79,8 +79,8 @@
                                             format="dd MMM, yyyy"
                                             value-format="yyyy-MM-dd"
                                             range-separator="-"
-                                            start-placeholder="Start date"
-                                            end-placeholder="End date">
+                                            :start-placeholder="$t('Start date')"
+                                            :end-placeholder="$t('End date')">
                                         </el-date-picker>
                                     </div>
                                 </div>
@@ -153,9 +153,8 @@
                                             </span>
                                             <el-switch
                                                 class="el-switch--small"
-                                                :active-text="$t(scope.row.status === 'published' ? 'Active' : 'Inactive')"
+                                                :active-text="scope.row.status === 'published' ? $t('Active') : $t('Inactive')"
                                                 @change="toggleStatus(scope.row.id, scope.row.title, scope.row.status)"
-
                                                 active-value="published"
                                                 inactive-value="unpublished"
                                                 v-model="scope.row.status"
@@ -263,8 +262,8 @@
                     <el-col :lg="12">
                         <card class="fluent_form_intro" style="height: 390px;">
                             <card-body>
-                                <h2 class="mb-3">{{ $t('Welcome to WP Fluent Froms') }}</h2>
-                                <p class="mb-4 fs-17">{{ $t('Thank you for installing WP Fluent Froms - The Most Advanced Form Builder Plugin for WordPress.') }}
+                                <h2 class="mb-3">{{ $t('Welcome to WP Fluent Forms') }}</h2>
+                                <p class="mb-4 fs-17">{{ $t('Thank you for installing WP Fluent Forms - The Most Advanced Form Builder Plugin for WordPress.') }}
                                 </p>
                                 <el-button type="primary" size="large" @click="showAddFormModal = true">
                                     {{$t('Click Here to Create Your First Form')}}
@@ -375,7 +374,15 @@ export default {
               ]
             },
             filter_by:'all',
-            form_statuses: {all: this.$t('All'), published: this.$t('Active'), unpublished: this.$t('Inactive'), is_payment: this.$t('Payment Form'), post: this.$t('Post Form'), conv_form: this.$t('Conversational Form'), step_form: this.$t('Multi-Step Form')},
+            form_statuses: {
+                all: 'All',
+                published: 'Active',
+                unpublished: 'Inactive',
+                is_payment: 'Payment Form',
+                post: 'Post Form',
+                conv_form: 'Conversational Form',
+                step_form: 'Multi-Step Form'
+            },
             searchFormsKeyWord: '',
             clearingSearchKeyword: false,
             postTypeSelectionDialogVisibility: false,

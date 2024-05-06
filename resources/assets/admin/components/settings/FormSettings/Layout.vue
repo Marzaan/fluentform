@@ -304,9 +304,9 @@
                 </card-head-group>
             </card-head>
             <card-body>
-                <el-form-item class="ff-form-item-flex ff-form-item">
+                <el-form-item class="ff-form-item-flex ff-form-item ff-form-setting-label-width">
                     <template slot="label">
-                        <span style="width: 390px;">
+                        <span>
                             {{ $t('Disable IP Logging') }}
 
                             <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
@@ -323,9 +323,9 @@
                     <el-switch class="el-switch-lg" v-model="misc.isIpLogingDisabled"></el-switch>
                 </el-form-item>
 
-                <el-form-item class="ff-form-item-flex ff-form-item">
+                <el-form-item class="ff-form-item-flex ff-form-item ff-form-setting-label-width">
                     <template slot="label">
-                        <span style="width: 390px;">
+                        <span>
                             {{ $t('Disable Form Analytics') }}
 
                             <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
@@ -342,9 +342,9 @@
                     <el-switch class="el-switch-lg" v-model="misc.isAnalyticsDisabled"></el-switch>
                 </el-form-item>
 
-                <el-form-item class="ff-form-item-flex ff-form-item">
+                <el-form-item class="ff-form-item-flex ff-form-item ff-form-setting-label-width">
                     <template slot="label">
-                        <span style="width: 390px;">
+                        <span>
                             <span>
                                 {{ $t('Enable Honeypot Security') }}
                                 <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
@@ -367,9 +367,9 @@
                 </el-form-item>
 
                 <template v-if="akismet_available">
-                    <el-form-item class="ff-form-item-flex ff-form-item">
+                    <el-form-item class="ff-form-item-flex ff-form-item ff-form-setting-label-width">
                         <template slot="label">
-                            <span style="width: 390px;">
+                            <span>
                                 <span>
                                     {{ $t('Enable Akismet Integration') }}
                                     <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
@@ -413,9 +413,9 @@
 
                 </template>
 
-                <el-form-item class="ff-form-item-flex ff-form-item">
+                <el-form-item class="ff-form-item-flex ff-form-item ff-form-setting-label-width">
                     <template slot="label">
-                        <span style="width: 390px;">
+                        <span>
                             {{ $t('Classic Editor Button') }}
                             <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
                                 <div slot="content">
@@ -432,9 +432,9 @@
                                v-model="misc.classicEditorButton"></el-switch>
                 </el-form-item>
 
-                <el-form-item class="ff-form-item-flex ff-form-item">
+                <el-form-item class="ff-form-item-flex ff-form-item ff-form-setting-label-width">
                     <template slot="label">
-                        <span style="width: 390px;">
+                        <span>
                             <span>
                                 {{ $t('Enable No-Conflict Mode') }}
                                 <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
@@ -450,15 +450,14 @@
                             </span>
                             <p class="text-note mt-1">{{ $t('Recommended Settings: Enabled') }}</p>
                         </span>
-
                     </template>
                     <el-switch class="el-switch-lg" active-value="yes" inactive-value="no"
                                v-model="misc.noConflictStatus"></el-switch>
                 </el-form-item>
 
-                <el-form-item class="ff-form-item-flex ff-form-item">
+                <el-form-item class="ff-form-item-flex ff-form-item ff-form-setting-label-width">
                     <template slot="label">
-                        <span style="width: 390px;">
+                        <span>
                             {{ $t('Enable Auto Tab - Index') }}
                             <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
                                 <div slot="content">
@@ -554,9 +553,9 @@
 
                 <!-- Enable captcha in All form -->
                 <div class="el-form-item-wrap">
-                    <el-form-item class="ff-form-item-flex ff-form-item mb-3">
+                    <el-form-item class="ff-form-item-flex ff-form-item mb-3 ff-form-setting-label-width">
                         <template slot="label">
-                            <span style="width: 390px;">
+                            <span>
                                 <span>
                                     {{ $t('Auto Load Captcha') }}
                                     <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
@@ -585,9 +584,9 @@
                 </div>
                 <!-- Toggle Admin Top Navigation -->
                 <div class="el-form-item-wrap">
-                    <el-form-item class="ff-form-item-flex ff-form-item mb-3">
+                    <el-form-item class="ff-form-item-flex ff-form-item mb-3 ff-form-setting-label-width">
                         <template slot="label">
-                            <span style="width: 390px;">
+                            <span>
                                 {{ $t('Admin Top Navigation') }}
                                 <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
                                     <div slot="content">
@@ -725,9 +724,10 @@
 
                             const $settingsOption = jQuery('.ff_global_settings_option');
 
-                            if($settingsOption.length){
-                                const top = jQuery(targetId).offset().top - 34 - $settingsOption.position().top + $settingsOption.scrollTop();
-
+                            if ($settingsOption.length) {
+	                            const menuHeight = jQuery('.ff_header').first()?.outerHeight() || 0;
+	                            const wpAdminBarHeight = jQuery('#wpadminbar').outerHeight() || 0;
+                                const top = jQuery(targetId).offset().top + $settingsOption.scrollTop() - (wpAdminBarHeight + menuHeight + $settingsOption.position().top);
                                 scrollTop(top, 'fast', '.ff_global_settings_option').then((_) => {
                                     if(targetId.length) {
                                         setTimeout(() => {

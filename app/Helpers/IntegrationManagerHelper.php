@@ -124,5 +124,19 @@ class IntegrationManagerHelper
         return $setting->value;
     }
     
+    public static function isIntegrationEnabled($key)
+    {
+        static $globalModules = [];
+    
+        if (empty($globalModules)) {
+            $globalModules = get_option('fluentform_global_modules_status');
+        }
+        if  (\FluentForm\Framework\Helpers\ArrayHelper::get($globalModules, $key) == 'yes') {
+            return true;
+        }
+    
+        return false;
+    }
+    
     
 }

@@ -75,8 +75,10 @@
                         jQuery(targetHash).addClass('highlight-border');
 
                         const $settingsForm = jQuery('.ff_settings_form');
-                        if($settingsForm.length){
-                            const top = jQuery(targetHash).offset().top - 34 - $settingsForm.position().top + $settingsForm.scrollTop();
+                        if ($settingsForm.length) {
+	                        const ffMenuHeight = jQuery('.ff_form_wrap .form_internal_menu').first()?.outerHeight() || 0;
+	                        const wpAdminBarHeight = jQuery('#wpadminbar').outerHeight() || 0;
+                            const top = jQuery(targetHash).offset().top + $settingsForm.scrollTop() - (wpAdminBarHeight + ffMenuHeight + $settingsForm.position().top);
                             scrollTop(top, 'fast', '.ff_settings_form').then((_) => {
                                 jQuery('head title').text( e.target.textContent.trim() + ' - Fluent Forms');
                                 if(targetHash.length) {

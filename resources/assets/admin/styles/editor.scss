@@ -124,6 +124,9 @@
       padding: 10px;
       border-radius: 5px;
       margin: 10px -10px;
+      .el-input__inner{
+        transition: all 0.5s;
+      }
     }
     .ff_validation_rule_error_choice {
       padding-left: 10px;
@@ -131,9 +134,33 @@
       .el-form-item {
         margin-bottom: 0;
       }
+      .ff_validation_rule_error_label_wrap{
+        label{
+          padding-bottom: 0px;
+        }
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
     }
   }
-
+  .ff-switch-sm{
+    .el-switch__label span{
+      font-size: 12px;
+    }
+    .el-switch__core{
+      width: 26px!important;
+      height: 16px;
+      &:after {
+        width: 12px;
+        height: 12px;
+      }
+    }
+    &.is-checked .el-switch__core::after {
+      margin-left: -13px;
+    }
+  }
   &__body {
     &-content {
       max-width: 100%;
@@ -581,6 +608,10 @@ div.mce-inline-toolbar-grp.mce-arrow-up,
 
 .conditional-logic {
   margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
 .condition-value,
@@ -1019,6 +1050,7 @@ mark {
   padding: 10px;
   border-radius: 5px;
   margin: 0 -10px;
+  margin-bottom: 10px;
 }
 
 .option-fields-section--content{

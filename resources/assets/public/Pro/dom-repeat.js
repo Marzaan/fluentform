@@ -124,28 +124,16 @@ const registerRepeaterHandler = function ($theForm) {
 
         $freshCopy.find('td').each(function (i, td) {
             var el = jQuery(this).find('.ff-el-form-control:last-child');
-            var tabIndex = el.attr('tabindex');
-
+            var newId = 'ffrpt-' + (new Date()).getTime() + i;
+            var itemProp = {
+                value: el.attr('data-default') || '',
+                id: newId
+            };
+            el.prop(itemProp);
             var dataMask = el.attr('data-mask');
             if (dataMask) {
                 el.mask(dataMask);
             }
-
-            var newId = 'ffrpt-' + (new Date()).getTime() + i;
-            let oldDataName = el.data('name');
-            var itemProp = {
-                value: '',
-                id: newId
-            };
-
-            if(oldDataName) {
-
-            }
-
-            if (tabIndex) {
-            //    itemProp.tabIndex = parseInt(tabIndex) + itemLength;
-            }
-            el.prop(itemProp);
         });
         $freshCopy.insertAfter($tr);
 

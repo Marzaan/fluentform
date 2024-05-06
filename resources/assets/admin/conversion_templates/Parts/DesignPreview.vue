@@ -27,8 +27,8 @@
                 v-model="device_type"
                 active-value="desktop"
                 inactive-value="mobile"
-                active-text="Desktop"
-                inactive-text="Mobile">
+                :active-text="$t('Desktop')"
+                :inactive-text="$t('Mobile')">
             </el-switch>
         </div>
     </div>
@@ -189,6 +189,8 @@ export default {
 
             this.$emit('css_generated', css);
             this.pushCSS(css);
+			// Add background color on iframe
+			jQuery('#fcc_design_preview').css({"background-color": settings.background_color});
         },
         hexToRGBA(hex, opacity) {
 

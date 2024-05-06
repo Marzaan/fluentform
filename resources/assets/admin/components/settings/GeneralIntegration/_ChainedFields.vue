@@ -20,7 +20,6 @@
     </div>
 </template>
 <script type="text/babel">
-    import each from 'lodash/each';
     export default {
         name: 'ListSelectFilter',
         props: ['settings', 'field', 'value', 'select_class'],

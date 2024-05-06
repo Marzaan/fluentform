@@ -124,9 +124,9 @@ $app->addAction('fluentform/global_menu', function () use ($app) {
 });
 
 $app->addAction('wp_dashboard_setup', function () {
-    $roleManager = new \FluentForm\App\Modules\Acl\Acl();
+    $acl = new \FluentForm\App\Modules\Acl\Acl();
 
-    if (!$roleManager->getCurrentUserCapability()) {
+    if (!$acl::getCurrentUserCapability()) {
         return;
     }
     wp_add_dashboard_widget('fluentform_stat_widget', __('Fluent Forms Latest Form Submissions', 'fluentform'), function () {
@@ -211,7 +211,8 @@ $app->addAction('fluentform/loading_editor_assets', function ($form) {
         'input_checkbox',
     ];
     foreach ($upgradableCheckInputs as $upgradeElement) {
-        add_filter('fluentform/editor_init_element_' . $upgradeElement, function ($element) use ($upgradeElement) {
+        add_filter('fluentform/editor_init_element_' . $upgradeElement, function ($element) use ($upgradeElement, $form) {
+    
             if (!\FluentForm\Framework\Helpers\ArrayHelper::get($element, 'settings.advanced_options')) {
                 $formattedOptions = [];
                 $oldOptions = \FluentForm\Framework\Helpers\ArrayHelper::get($element, 'options', []);
@@ -329,6 +330,10 @@ $app->addAction('fluentform/loading_editor_assets', function ($form) {
             $item['settings']['container_width'] = '';
         }
 
+        if (!isset($item['settings']['is_width_auto_calc'])) {
+            $item['settings']['is_width_auto_calc'] = true;
+        }
+
         $shouldSetWidth = !empty($item['columns']) && (!isset($item['columns'][0]['width']) || !$item['columns'][0]['width']);
 
         if ($shouldSetWidth) {
@@ -424,6 +429,44 @@ $app->addAction('fluentform/loading_editor_assets', function ($form) {
         $item['attributes']['name'] = 'cf-turnstile-response';
         return $item;
     }, 10, 2);
+
+    add_filter('fluentform/editor_init_element_address', function ($item) {
+        foreach ($item['fields'] as &$addressField) {
+            if (
+                !isset($addressField['settings']['label_placement']) &&
+                !isset($addressField['settings']['label_placement_options'])
+            ) {
+                $addressField['settings']['label_placement'] = '';
+                $addressField['settings']['label_placement_options'] = [
+                    [
+                        'value' => '',
+                        'label' => __('Default', 'fluentform'),
+                    ],
+                    [
+                        'value' => 'top',
+                        'label' => __('Top', 'fluentform'),
+                    ],
+                    [
+                        'value' => 'right',
+                        'label' => __('Right', 'fluentform'),
+                    ],
+                    [
+                        'value' => 'bottom',
+                        'label' => __('Bottom', 'fluentform'),
+                    ],
+                    [
+                        'value' => 'left',
+                        'label' => __('Left', 'fluentform'),
+                    ],
+                    [
+                        'value' => 'hide_label',
+                        'label' => __('Hidden', 'fluentform'),
+                    ],
+                ];
+            }
+        }
+        return $item;
+    });
 }, 10);
 
 $app->addAction('fluentform/addons_page_render_fluentform_pdf', function () use ($app) {
@@ -465,9 +508,9 @@ add_action('save_post', function ($post_id) use ($app) {
     if (!is_post_type_viewable(get_post_type($post_id))) {
         return;
     }
-
-    $post_content = $app->request->get('post_content');
-    if ($post_content) {
+    
+    $post_content = isset($_REQUEST['post_content']) ? $_REQUEST['post_content'] : false;
+    if ($post_content && is_string($post_content)) {
         $post_content = wp_kses_post(wp_unslash($post_content));
     } else {
         $post = get_post($post_id);
@@ -580,6 +623,19 @@ add_action('wp', function () use ($app) {
             }
             wp_enqueue_script('fluent-form-submission');
             wp_enqueue_style('fluent-form-preview', fluentFormMix('css/preview.css'));
+            if (!defined('FLUENTFORMPRO')) {
+                wp_enqueue_script(
+                    'fluentform-preview_app',
+                    fluentFormMix('js/form_preview_app.js'),
+                    ['jquery'],
+                    FLUENTFORM_VERSION,
+                    true
+                );
+
+                wp_localize_script('fluentform-preview_app', 'fluent_preview_var', [
+                    'i18n'    => \FluentForm\App\Modules\Registerer\TranslationString::getPreviewI18n()
+                ]);
+            }
         });
 
         (new \FluentForm\App\Modules\ProcessExteriorModule())->handleExteriorPages();
@@ -935,7 +991,8 @@ add_action('enqueue_block_editor_assets', function () {
     wp_enqueue_style(
         'fluentform-gutenberg-block',
         fluentFormMix('css/fluent_gutenblock.css'),
-        ['wp-edit-blocks']
+        ['wp-edit-blocks'],
+        FLUENTFORM_VERSION
     );
     $fluentFormPublicCss = fluentFormMix('css/fluent-forms-public.css');
     $fluentFormPublicDefaultCss = fluentFormMix('css/fluentform-public-default.css');

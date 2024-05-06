@@ -7,6 +7,11 @@
             <section-head-content>
                 <btn-group as="div">
                     <btn-group-item as="div">
+                        <el-button @click="showImportEntriesModal = true" type="primary" class="el-button">
+                            {{ $t('Import Entries') }}
+                        </el-button>
+                    </btn-group-item>
+                    <btn-group-item as="div">
                         <el-button @click="toggleChart()" type="primary" class="el-button--soft-2">
                             {{ chart_status == 'yes' ? $t('Hide Chart') : $t('Show Chart')}}
                         </el-button>
@@ -52,6 +57,8 @@
         <div v-if="chart_status == 'yes'" ref="entry_chart" class="entry_chart mt-4 mb-4">
             <entry-chart :form_id="selectedFormId" :date_range="filter_date_range" :entry_status="entry_status" ></entry-chart>
         </div>
+
+        <ImportEntriesModal :app="app" :visibility.sync="showImportEntriesModal" />
 
         <div class="ff_entries_details">
             <div class="ff_section_head sm">
@@ -168,7 +175,8 @@ import BtnGroup from '@/admin/components/BtnGroup/BtnGroup.vue';
 import BtnGroupItem from '@/admin/components/BtnGroup/BtnGroupItem.vue';
 import SectionHead from '@/admin/components/SectionHead/SectionHead.vue';
 import SectionHeadContent from '@/admin/components/SectionHead/SectionHeadContent.vue';
-import {scrollTop} from '@/admin/helpers'
+import {scrollTop} from '@/admin/helpers';
+import ImportEntriesModal from "@/admin/components/modals/ImportEntriesModal.vue";
 
 export default {
     name: 'AllEntries',
@@ -177,7 +185,8 @@ export default {
         BtnGroup,
         BtnGroupItem,
         SectionHead,
-        SectionHeadContent
+        SectionHeadContent,
+        ImportEntriesModal
     },
     data() {
         return {
@@ -237,7 +246,9 @@ export default {
             chart_status: 'yes',
             entry_status: '',
             search: '',
-            radioOption: 'all'
+            radioOption: 'all',
+            showImportEntriesModal: false,
+            app: window.fluent_forms_global_var
         }
     },
     methods: {

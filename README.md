@@ -2,9 +2,9 @@
 Contributors: techjewel,adreastrian,heera,wpmanageninja
 Tags: contact form, quiz, wp forms, forms, form builder, contact form builder, fluent forms, custom form, order form, contact forms
 Requires at least: 4.5
-Tested up to: 6.3.2
-Requires PHP: 7.1
-Stable tag: 5.1.0
+Tested up to: 6.5.2
+Requires PHP: 7.4
+Stable tag: 5.1.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -439,6 +439,97 @@ The entire source code is <a href="https://github.com/fluentform/fluentform">ava
 12. Asset Loading Comparison with Other Plugins
 
 == Changelog ==
+
+= 5.1.15 (Date: April 25, 2024) =
+- Fix nested condition
+- Fix entry action for post feed
+
+= 5.1.14 (Date: April 19, 2024) =
+- Improves conversational form sanitization & escaping
+
+= 5.1.13 (Date: April 18, 2024) =
+- Fix Conversational Form ShortCode Rendering
+
+= 5.1.12 (Date: April 18, 2024) =
+- Adds Name Field on conversational form
+- Adds label shortcode
+- Improved container action UI
+- Fixes mask input on Elementor popup
+- Fixes coupon skip button text on conversational form
+- Fixes query string email symbol encode on redirect URL
+- Fixes redirect URL params with anchor
+- Fixes checkbox and radio smart UI keyboard tab navigation
+- Fixes name fields individual label placement
+- Fixes checkbox & radio field issue with condition
+
+= 5.1.11 (Date: February 26, 2024) =
+- Fixes URL escaping bug
+
+= 5.1.10 (Date: February 26, 2024) =
+- Adds turnstile captcha for conversational form
+- Improves turnstile with appearance modes
+- Fixes Inventory Module hiding empty stock
+- Fixes url escaping issue of form redirect
+- Fixes sanitization issue for html supported fields
+- Fixes Entry Export with user submission IP
+- Fixes PDF feed watermark image
+- Fixes Name Field aria-required attribute
+- Fixes PDF Feeds on duplicate form
+- Fixes Numeric min max Field Bug
+
+= 5.1.9 (Date: January 23, 2024) =
+- Update Custom html field sanitization
+- Improves server side conditional settings validation
+
+= 5.1.8 (Date: January 19, 2024) =
+- Fix step navigation button issue
+- Improves sanitization on form import
+
+= 5.1.7 (Date: January 17, 2024) =
+- Adds Contact Form 7 Migration
+- Adds Inherit theme style support in form Styler
+- Adds Form Title smart code on confirmation
+- Adds more translations string
+- Adds Filter to skip validation of selectable inputs
+- Improves Admin Mobile responsiveness
+- Fix Conversational form Custom HTML automatically scrolls to bottom of page
+- Fix predefined form filter issue on form creation
+- Fix hidden field mapping on integration
+- Fix CC/BCC email on Email Notification Routing
+- Fix Sync visual report order with form fields order
+- Fixed nested conditional field
+
+= 5.1.6 (Date: December 2, 2023) =
+- Fixes Paypal custom payment issue
+- Fixes personality quiz conversational issue
+- Fixes Notion multi select
+
+= 5.1.5 (Date: November 23, 2023) =
+- Fixes max length validation
+- Improves options validation
+- Improves date validation
+- Improves conditional logics
+
+= 5.1.4 (Date: November 22, 2023) =
+- Fixes advanced country list issue
+
+= 5.1.3 (Date: November 22, 2023) =
+- Improves container width auto calculation
+- Improves PHP 8.2 support
+- Improves backend performance
+- Fixes GDPR field required message
+- Fixes BuddyPress User Blog plugin conflict
+- Fixes WPForms & Gravity Forms migration issues
+- Fixes conversational form design duplication and import
+
+= 5.1.2 (Date: November 9, 2023) =
+- Maintenance updates for WP 6.4
+- Improves data escaping for URL params
+- Fixes composer class autoloading
+- Fixes HTTP status code issues
+
+= 5.1.1 (Date: November 4, 2023) =
+- Improves custom CSS & JS loading
 
 = 5.1.0 (Date: November 1, 2023) =
 - Adds Global Search

@@ -553,7 +553,7 @@ $element_customization_settings = [
     'number_step' => [
         'template'  => 'inputText',
         'label'     => __('Step', 'fluentform'),
-        'help_text' => __('Please provide step attribute for this field. Give value "any" for floating value', 'fluentform'),
+        'help_text' => __('Please provide step attribute for this field.', 'fluentform'),
     ],
     'prefix_label' => [
         'template'  => 'inputText',

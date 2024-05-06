@@ -37,7 +37,8 @@ import {
     OptionGroup,
     Alert,
     Skeleton,
-    SkeletonItem
+    SkeletonItem,
+    Tooltip
 } from 'element-ui';
 Vue.use(Vddl);
 Vue.use(Form);
@@ -69,6 +70,7 @@ Vue.use(Dropdown)
 Vue.use(Dialog)
 Vue.use(Skeleton)
 Vue.use(SkeletonItem)
+Vue.use(Tooltip)
 
 Vue.use(Loading.directive)
 Vue.prototype.$loading = Loading.service

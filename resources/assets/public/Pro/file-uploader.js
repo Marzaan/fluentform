@@ -256,6 +256,13 @@ export default function ($, $form, form, fluentFormVars, formSelector) {
             });
 
         });
+
+        // handling accessibility
+        $form.find('.ff_upload_btn').on('keyup', function (e) {
+            if (e.keyCode == 32) {
+                $(this).siblings('input[type=file]').trigger('click');
+            }
+        })
     };
 
     /**

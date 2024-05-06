@@ -120,12 +120,6 @@
             getEditType(field) {
                 let element = field.element;
                 switch (element) {
-                    case 'input_name':
-                        return {
-                            component: 'multi-text-line',
-                            type: 'text'
-                        };
-                        break;
                     case 'input_email':
                     case 'post_title':
                     case 'input_text':
@@ -176,6 +170,7 @@
                             field: field
                         }
                     case 'address':
+	                case 'input_name':
                         return {
                             component: 'address-editor',
                             type: 'address',
@@ -216,7 +211,7 @@
                             field: field
                         }
                         break;
-                    case 'input_repeat':
+                    case 'repeater_field':
                         return {
                             component: 'repeat-field',
                             type: 'repeat_field',

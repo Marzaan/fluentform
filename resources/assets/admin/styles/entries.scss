@@ -84,6 +84,9 @@ table.editor_table, .ff_entry_table_field, .ff-table {
     padding: 0px 7px;
     background: whitesmoke;
   }
+  .action-buttons-group {
+    display: flex;
+  }
 }
 
 .ff-payment-table {
@@ -115,7 +118,7 @@ table.editor_table, .ff_entry_table_field, .ff-table {
     list-style: none;
     padding: 7px 0px;
     overflow: hidden;
-    .dashicons, 
+    .dashicons,
     .dashicons-before::before{
       line-height: inherit;
     }
@@ -328,6 +331,9 @@ table.editor_table, .ff_entry_table_field, .ff-table {
   .ff_card{
     margin-bottom: 24px;
   }
+  .entry_submission_log_des{
+    overflow-y: auto;
+  }
 }
 
 // wpf each entry
@@ -417,7 +423,8 @@ a.input-image:hover {
     }
     &-status{
       font-size: 16px;
-      color: $--color-text-regular;
+      color: $--color-text-primary;
+
     }
   }
   [class*="el-icon-"],

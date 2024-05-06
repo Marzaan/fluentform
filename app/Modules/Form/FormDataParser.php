@@ -302,7 +302,14 @@ class FormDataParser
     public static function formatName($value)
     {
         if (is_array($value) || is_object($value)) {
-            return fluentImplodeRecursive(' ', array_filter(array_values((array) $value)));
+            $value = (array) $value;
+            $order = ['first_name', 'middle_name', 'last_name'];
+            uksort($value, function($a, $b) use ($order) {
+                $posA = array_search($a, $order);
+                $posB = array_search($b, $order);
+                return $posA - $posB;
+            });
+            return fluentImplodeRecursive(' ', array_filter(array_values($value)));
         }
 
         return $value;
@@ -314,8 +321,12 @@ class FormDataParser
             return self::formatValue($values);
         }
 
-        if (!is_array($values) || empty($values)) {
+        if (!is_array($values)) {
             return $values;
+        }
+
+        if (empty($values)) {
+            return '';
         }
 
         if (!isset($field['options'])) {

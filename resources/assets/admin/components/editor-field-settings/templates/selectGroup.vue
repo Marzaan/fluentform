@@ -1,7 +1,7 @@
 <template>
     <el-form-item>
         <elLabel slot="label" :label="listItem.label" :helpText="listItem.help_text"></elLabel>
-        <el-select v-loading="fetching" element-loading-text="Loading..." element-loading-spinner="none" v-model="model" placeholder="Select" class="el-fluid ff-group-select">
+        <el-select v-loading="fetching" :element-loading-text="$t('Loading...')" element-loading-spinner="none" v-model="model" placeholder="Select" class="el-fluid ff-group-select">
             <el-option-group
                     v-for="group in options"
                     :key="group.label"

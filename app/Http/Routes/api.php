@@ -46,6 +46,8 @@ $router->prefix('settings')->withPolicy('FormPolicy')->group(function ($router) 
 
         $router->get('conversational-design', 'FormSettingsController@conversationalDesign');
         $router->post('store-conversational-design', 'FormSettingsController@storeConversationalDesign');
+        $router->get('preset', 'FormSettingsController@getPreset');
+        $router->post('save-preset', 'FormSettingsController@savePreset');
     });
 });
 /*

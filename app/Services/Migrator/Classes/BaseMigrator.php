@@ -20,6 +20,7 @@ abstract class BaseMigrator
     {
         if (!$this->exist()) {
             wp_send_json_error([
+                //translators: %s Target Plugin Name
                 'message' => sprintf(__('%s is not installed.', 'fluentform'), $this->title),
             ]);
         }
@@ -589,7 +590,7 @@ abstract class BaseMigrator
                     'layout_class'       => $args['layout_class']
                 ],
                 'editor_options' => [
-                    'title'      => __('Check Box', 'fluentform'),
+                    'title'      => __('Checkbox', 'fluentform'),
                     'icon_class' => 'ff-edit-checkbox-1',
                     'template'   => 'inputCheckable'
                 ],
@@ -1469,6 +1470,19 @@ abstract class BaseMigrator
                 }
                 unset($metas['confirmations']);
             }
+
+            //when have webhooks
+            if ($webhooks = ArrayHelper::get($metas, 'webhooks')) {
+                \FluentForm\App\Models\FormMeta::remove($formId, 'fluentform_webhook_feed');
+                foreach ($webhooks as $webhook) {
+                    \FluentForm\App\Models\FormMeta::create([
+                        'form_id'  => $formId,
+                        'meta_key' => 'fluentform_webhook_feed',
+                        'value'    => json_encode($webhook)
+                    ]);
+                }
+                unset($metas['webhooks']);
+            }
             foreach ($metas as $metaKey => $metaData) {
                 (new \FluentForm\App\Modules\Form\Form(wpFluentForm()))->updateMeta($formId, $metaKey, $metaData);
             }
@@ -1636,6 +1650,16 @@ abstract class BaseMigrator
                 'created_at'    => $created_at ?: current_time('mysql'),
                 'updated_at'    => $updated_at ?: current_time('mysql')
             ];
+
+            if ($is_favourite = ArrayHelper::get($entry, 'is_favourite')) {
+                $insertData['is_favourite'] = $is_favourite;
+                ArrayHelper::forget($entry, 'is_favourite');
+            }
+            if ($status = ArrayHelper::get($entry, 'status')) {
+                $insertData['status'] = $status;
+                ArrayHelper::forget($entry, 'status');
+            }
+
             $insertId = wpFluent()->table('fluentform_submissions')->insertGetId($insertData);
 
             $uidHash = md5(wp_generate_uuid4() . $insertId);

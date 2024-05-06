@@ -345,7 +345,7 @@
                 return this.paginate(this.forms);
             },
             entryImportSupported() {
-                let supported = ['caldera', 'ninja_forms', 'gravityform', 'wpforms'];
+                let supported = ['caldera', 'ninja_forms', 'gravityform', 'wpforms', 'contactform7'];
                 return supported.indexOf(this.currentFormType) !== -1
             },
         },

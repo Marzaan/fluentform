@@ -25,7 +25,7 @@
                             <span :class="'ff_badge ff_badge_' + subscription.status">
                                 <i :class="getPaymentStatusIcon(subscription.status)"></i> {{ subscription.status }}
                             </span>
-                            <span v-show="parseInt(subscription.initial_amount)"> & Signup Fee: <em
+                            <span v-show="parseInt(subscription.initial_amount)"> {{ $t('& Signup Fee:') }} <em
                                 v-html="formatMoney(subscription.initial_amount)"></em></span>
                         </div>
 
@@ -45,7 +45,7 @@
                                     v-show="getSubscriptionUrl(subscription)"
                                     class="el-button el-button--primary el-button--soft el-button--mini"
                                 >
-                                    View on {{ payment_method }}
+                                    {{ $t('View on') }} {{ payment_method }}
                                 </a>
                             </btn-group-item>
                             <btn-group-item>

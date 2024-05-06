@@ -897,6 +897,16 @@ class GravityFormsMigrator extends BaseMigrator
             if ($updated_at = ArrayHelper::get($submission, 'date_updated')) {
                 $entry['updated_at'] = $updated_at;
             }
+            if ($is_favourite = ArrayHelper::get($submission, 'is_starred')) {
+                $entry['is_favourite'] = $is_favourite;
+            }
+            if ($status = ArrayHelper::get($submission, 'status')) {
+                if ('trash' == $status || 'spam' == $status) {
+                    $entry['status'] = 'trashed';
+                } elseif ('active' == $status && ArrayHelper::isTrue($submission, 'is_read')) {
+                    $entry['status'] = 'read';
+                }
+            }
             $entries[] = $entry;
         }
         return $entries;

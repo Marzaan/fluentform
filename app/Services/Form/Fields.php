@@ -13,7 +13,7 @@ class Fields
         $form = Form::find($formId);
 
         $fields = FormFieldsParser::getShortCodeInputs($form, [
-            'admin_label', 'attributes', 'options',
+            'admin_label', 'attributes', 'options', 'raw'
         ]);
 
         $fields = array_filter($fields, function ($field) {
@@ -62,15 +62,21 @@ class Fields
 
     public function filterEditorFields($fields)
     {
-        foreach ($fields as $index => $field) {
+        foreach ($fields as &$field) {
             $element = Arr::get($field, 'element');
             if ('select_country' == $element) {
-                $fields[$index]['options'] = getFluentFormCountryList();
-            } elseif ('gdpr-agreement' == $element || 'terms_and_condition' == $element) {
-                $fields[$index]['options'] = ['on' => 'Checked'];
+                $field['options'] = getFluentFormCountryList();
+            } elseif ('gdpr_agreement' == $element || 'terms_and_condition' == $element) {
+                $field['options'] = ['on' => 'Checked'];
+            } elseif ('quiz_score' == $element) {
+                $notPersonalityType = Arr::get($field, 'raw.settings.result_type') != 'personality';
+                if ($notPersonalityType && Arr::exists($field, 'options')) {
+                    Arr::forget($field, 'options');
+                }
             }
+            Arr::forget($field, 'raw');
         }
 
-        return $fields;
+        return apply_filters('fluentform/filtered_editor_fields', $fields);
     }
 }

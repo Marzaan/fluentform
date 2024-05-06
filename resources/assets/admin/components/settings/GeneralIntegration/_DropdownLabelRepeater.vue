@@ -3,15 +3,15 @@
         <table v-if="!loading" class="ff-table">
             <thead>
             <tr>
-                <th>{{field.field_label || 'Field Label'}}</th>
-                <th>{{field.value_label || 'Field Value'}}</th>
+                <th>{{field.field_label ||  $t('Field Label')}}</th>
+                <th>{{field.value_label ||  $t('Field Value')}}</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="(item, itemIndex) in settings[field.key]" :key="'item_'+itemIndex">
                 <td>
-                    <el-input :placeholder="field.field_label || 'Field Label'" v-model="item.label"></el-input>
+                    <el-input :placeholder="field.field_label || $t('Field Label')" v-model="item.label"></el-input>
                 </td>
                 <td>
                     <field-general

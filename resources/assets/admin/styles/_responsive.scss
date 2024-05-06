@@ -103,6 +103,7 @@
 
 @media (max-width: 768px) {
   .form_internal_menu {
+    margin-left: -10px;
     ul.ff_setting_menu {
       float: right;
       padding-right: 10px !important;
@@ -146,7 +147,7 @@
     }
   }
   .settings_app {
-    min-width: 500px;
+    //min-width: 500px;
   }
   .el-tabs__content {
     padding: 20px 10px !important;
@@ -223,9 +224,70 @@
     padding-right: 0;
     padding-left: 0;
   }
+
+  .ff_settings_sidebar_wrap{
+    position: absolute;
+    flex-shrink: 0;
+    left: -240px;
+    transition: 0.3s;
+    z-index: 999;
+    &.active{
+      left: -10px;
+      .ff_layout_section_sidebar {
+        box-shadow: 2px 1px 10px 0px rgba(30, 31, 33, 0.1);
+      }
+      .ff_sidebar_toggle{
+        right: -18px;
+        .ff-icon{
+          &::before{
+            content: "\e919";
+          }
+        }
+      }
+    }
+  }
+  .ff_sidebar_toggle{
+   display: flex; 
+  }
+  .ff_header{
+    margin-left: -10px;
+    position: relative;
+    .global-search-menu-button{
+      position: absolute;
+      top: 12px;
+      right: 60px;
+    }
+  }
+  .conditional-logic {
+    flex-direction: column;
+    > *{
+      width: 100%;
+    }
+  }
+  .el-radio-button-group{
+    border: 0;
+    .el-radio-button{
+      &__inner{
+        border-radius: 4px;
+      }
+      &:last-child .el-radio-button__inner,
+      &:first-child .el-radio-button__inner {
+        border-radius: 4px;
+      }
+    }
+  }
 }
 
 @media (max-width: 425px) {
+  label.el-checkbox{
+    display: inline-flex;
+  }
+  .el-checkbox__label{
+    white-space: initial;
+  }
+  .el-checkbox__input{
+    line-height: 1.6;
+  }
   .wrap.ff_form_wrap.ff_screen_editor .form_internal_menu .ff-navigation-right {
     margin-right: 0;
     button, a, span {
@@ -242,11 +304,6 @@
   }
 
   .form_internal_menu {
-    position: relative;
-    display: block !important;
-    background: white;
-    overflow: hidden;
-    top: 0 !important;
     margin: 0 -10px;
     width: auto;
     ul.ff_setting_menu {
@@ -269,13 +326,6 @@
   ul.el-pager {
     display: none !important;
   }
-
-  .ff_settings_wrapper {
-    min-width: 600px;
-  }
-  .ff_form_wrap .ff_form_wrap_area {
-    overflow: scroll;
-  }
   button.el-button.pull-right {
     float: left !important;
   }
@@ -294,6 +344,19 @@
   }
   .option-fields-section--content {
     padding: 15px 5px;
+  }
+  .ff-add-confirmation-wrap{
+    .el-radio.is-bordered {
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    .el-radio.is-bordered + .el-radio.is-bordered {
+      margin-left: 0;
+    }
+  }
+  .ff-form-item-flex{
+    flex-wrap: wrap;
+    gap: 10px;
   }
 }
 

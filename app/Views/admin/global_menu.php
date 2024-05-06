@@ -108,13 +108,27 @@ $page = sanitize_text_field($_GET['page']);
     do_action('fluentform/after_global_menu');
     
     wp_add_inline_script('fluent_forms_global', "
-                //for mobile nav
-                let targetElem = jQuery('.ff_menu');
-                jQuery('.ff_menu_toggle').on('click', function() {
-                    targetElem.toggleClass('ff_menu_active');
-                });
-                $globalSearchButtonClickScript
-           ");
+        //for mobile nav
+        let globalHeaderMenuElem = jQuery('.ff_menu');
+        jQuery('.ff_menu_toggle').on('click', function() {
+            globalHeaderMenuElem.toggleClass('ff_menu_active');
+        });
+
+        $globalSearchButtonClickScript
+
+        // for setting sidebar
+        let globalSettingSidebarElem = jQuery('.ff_settings_sidebar_wrap');
+        let globalOverlayElem = jQuery('#global-overlay');
+
+        jQuery('.ff_sidebar_toggle').on('click', function() {
+            jQuery(globalSettingSidebarElem).add(globalOverlayElem).toggleClass('active');
+        });
+        
+        jQuery(globalOverlayElem).on('click', function() {
+            jQuery(globalOverlayElem).add(globalSettingSidebarElem).removeClass('active');
+        });
+
+    ");
     ?>
 </div>
 <?php

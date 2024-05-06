@@ -365,6 +365,14 @@
                     })
                     .then(() => {
                         this.getEntryResources();
+						const statusUpdate = window.fluent_form_entries_vars.update_status;
+						if (
+							statusUpdate && this.entry_statuses.hasOwnProperty(statusUpdate) &&
+							statusUpdate !== this.entry.status
+						) {
+							this.handleStatusChange(statusUpdate);
+							this.getEntryResources();
+						}
                     })
                     .catch(error => {
                         this.$fail(error.message);

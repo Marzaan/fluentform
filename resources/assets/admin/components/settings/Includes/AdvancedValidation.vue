@@ -30,7 +30,7 @@
                     </template>
 
                     <el-radio-group class="mb-3" v-model="settings.validation_type">
-                        <el-radio v-for="(result_type, typeName) in result_types" :key="typeName" :label="typeName">{{result_type}}</el-radio>
+                        <el-radio v-for="(result_type, typeName) in result_types" :key="typeName" :label="$t(typeName)">{{result_type}}</el-radio>
                     </el-radio-group>
 
                     <p v-if="settings.validation_type == 'fail_on_condition_met'">
@@ -75,7 +75,7 @@
         data() {
             return {
                 labels: {
-                    status_label: 'Enabled Advanced Form Validation',
+                    status_label: 'Enable Advanced Form Validation',
                     notification_if_start: 'Proceed/Fail form submission if',
                     notification_if_end: 'of the following match:'
                 },

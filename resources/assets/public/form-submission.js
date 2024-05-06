@@ -146,8 +146,40 @@ jQuery(document).ready(function () {
 
                         validate($inputs);
 
+                        // Serialize form data
+                        var inputsData = $inputs.serializeArray();
+                        // data names array
+                        var inputsDataNames = inputsData.map(item => item.name);
+
+                        // Ignore chekbox and radio which one inside table like checkable-grid, net-promoter-score etc
+                        $inputs = $inputs.filter(function () {
+                            return !$(this).closest('.ff-el-input--content').find('table').length;
+                        });
+                        // Keep track of checkbox and radio groups that have been processed
+                        var processedGroups = {};
+                        // Add empty value for unchecked checkboxes and radio buttons
+                        $inputs.each(function() {
+                            var name = $(this).attr('name');
+                            if (!inputsDataNames.includes(name)) {
+                                if ($(this).is(':checkbox')) {
+                                    if (!processedGroups[name] && !$theForm.find('input[name="' + name + '"]:checked').length) {
+                                        inputsData.push({ name, value: '' });
+                                        processedGroups[name] = true;
+                                    }
+                                } else if ($(this).is(':radio')) {
+                                    if (!processedGroups[name] && !$theForm.find('input[name="' + name + '"]:checked').length) {
+                                        inputsData.push({ name, value: '' });
+                                        processedGroups[name] = true;
+                                    }
+                                }
+                            }
+                        });
+                        // Convert inputsData array to serialized string
+                        var serializedData = $.param($.map(inputsData, function(input) {
+                            return { name: input.name, value: input.value };
+                        }));
                         var formData = {
-                            data: $inputs.serialize(),
+                            data: serializedData,
                             action: 'fluentform_submit',
                             form_id: $theForm.data('form_id')
                         };
@@ -625,6 +657,21 @@ jQuery(document).ready(function () {
 
                 };
 
+                var addFieldValidationRule = function (elName, ruleName, rule) {
+                    if (!form.rules[elName]) {
+                        form.rules[elName] = {};
+                    }
+                    form.rules[elName][ruleName] = rule;
+                }
+                var removeFieldValidationRule = function (elName, ruleName) {
+                    if (!(elName in form.rules)) {
+                        return;
+                    }
+                    if (ruleName in form.rules[elName]) {
+                        delete form.rules[elName][ruleName];
+                    }
+                }
+
                 /**
                  * Show form validation errors
                  * @param  {object} errors
@@ -747,8 +794,13 @@ jQuery(document).ready(function () {
                     div = $('<div/>', {class: 'error text-danger'});
                     div.attr('role', 'alert');
                     el.closest('.ff-el-group').addClass('ff-el-is-error');
-                    el.closest('.ff-el-input--content').find('div.error').remove();
-                    el.closest('.ff-el-input--content').append(div.text(message));
+                    if (el.closest('.ff-el-input--content').length) {
+                        el.closest('.ff-el-input--content').find('div.error').remove();
+                        el.closest('.ff-el-input--content').append(div.text(message));
+                    } else {
+                        el.find('div.error').remove();
+                        el.append(div.text(message));
+                    }
                 };
 
                 var initInlineErrorItems = function () {
@@ -881,6 +933,8 @@ jQuery(document).ready(function () {
                     addGlobalValidator,
                     config: form,
                     showFormSubmissionProgress,
+                    addFieldValidationRule,
+                    removeFieldValidationRule,
                     hideFormSubmissionProgress
                 }
 
@@ -983,10 +1037,8 @@ jQuery(document).ready(function () {
                     },
                 };
 
-                $('input[data-mask]').each(function (key, el) {
-                    var el = $(el),
-                        mask = el.data('mask'),
-                        maskStr = mask.mask;
+                jQuery('input[data-mask]').each(function (key, el) {
+                    var el = jQuery(el), mask = el.attr('data-mask');
 
                     let options = globalOptions;
                     if (el.attr('data-mask-reverse')) {
@@ -995,8 +1047,11 @@ jQuery(document).ready(function () {
                     if (el.attr('data-clear-if-not-match')) {
                         options.clearIfNotMatch = true;
                     }
-                    el.mask(maskStr, options);
-                });
+
+                    if (mask) {
+                        el.mask(mask, options);
+                    }
+                })
             },
 
             initCheckableActive: function () {
@@ -1187,6 +1242,9 @@ jQuery(document).ready(function () {
                  * @return bool
                  */
                 this.min = function (el, rule) {
+                    if (!el.val()) {
+                        return true;
+                    }
                     var val = window.ff_helper.numericVal(el);
                     val = val.toString();
                     if (!rule.value || !val.length) {
@@ -1204,6 +1262,9 @@ jQuery(document).ready(function () {
                  * @return bool
                  */
                 this.max = function (el, rule) {
+                    if (!el.val()) {
+                        return true;
+                    }
                     var val = window.ff_helper.numericVal(el);
                     val = val.toString();
 
@@ -1222,6 +1283,9 @@ jQuery(document).ready(function () {
                  * @return bool
                  */
                 this.digits = function (el, rule) {
+                    if (!el.val()) {
+                        return true;
+                    }
                     var val = window.ff_helper.numericVal(el);
                     val = val.toString();
 
@@ -1246,6 +1310,15 @@ jQuery(document).ready(function () {
 
                 this.allowed_image_types = function () {
                     return true;
+                };
+
+                /**
+                 * Validates for force failed
+                 *
+                 * @return true
+                 */
+                this.force_failed = function () {
+                    return false;
                 };
 
                 /**

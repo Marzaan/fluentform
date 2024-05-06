@@ -43,9 +43,9 @@
                                 <template slot-scope="scope">
                                     <span class="mr-3" v-if="scope.row.enabled">{{$t('Enabled')}}</span>
                                     <span class="mr-3" v-else style="color:#fa3b3c;">{{ $t('Disabled') }}</span>
-                                    <el-switch 
-                                        active-color="#00b27f" 
-                                        @change="handleActive(scope.row)" 
+                                    <el-switch
+                                        active-color="#00b27f"
+                                        @change="handleActive(scope.row)"
                                         v-model="scope.row.enabled">
                                     </el-switch>
                                 </template>
@@ -118,7 +118,7 @@
                             </a>
                         </btn-group-item>
                     </btn-group>
-                    
+
                     <img class="mt-6" :src="integrationsResource.asset_url" alt="integrations asset" />
                 </div>
             </card-body>
@@ -135,7 +135,7 @@
     import BtnGroup from '@/admin/components/BtnGroup/BtnGroup.vue';
     import BtnGroupItem from '@/admin/components/BtnGroup/BtnGroupItem.vue';
     import CardHeadGroup from '@/admin/components/Card/CardHeadGroup.vue';
-    
+
     export default {
         name: 'generalSettings',
         props: ['form_id', 'inputs', 'has_pro', 'editorShortcodes'],
@@ -165,6 +165,9 @@
         },
         methods: {
             add(integration_name) {
+                if (!integration_name) {
+                    return;
+                }
                 let integration = this.available_integrations[integration_name];
 
                 if(!integration.is_active) {

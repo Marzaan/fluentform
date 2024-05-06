@@ -12,12 +12,13 @@
 </template>
 
 <script type="text/babel">
+import DOMPurify from 'dompurify';
     export default {
         name: 'inputTextarea',
         props: ['listItem', 'value'],
         watch: {
             model() {
-                this.$emit('input', this.model);
+                this.$emit('input', DOMPurify.sanitize(this.model));
             }
         },
         data() {

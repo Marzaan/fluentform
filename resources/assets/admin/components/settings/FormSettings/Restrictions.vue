@@ -35,7 +35,7 @@
                             <el-col :md="8">
                                 <el-select class="w-100" v-model="form.limitNumberOfEntries.period">
                                     <el-option v-for="(label, period) in entryPeriodOptions" :key="period"
-                                            :label="label" :value="period"
+                                            :label="$t(label)" :value="period"
                                     ></el-option>
                                 </el-select>
                             </el-col>
@@ -88,7 +88,7 @@
                                 v-for="weekday in weekdays"
                                 :key="weekday"
                                 @change="handleCheckedDayChange"
-                                :label="weekday"
+                                :label="$t(weekday)"
                             ></el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
@@ -439,7 +439,7 @@
                 isIndeterminate: false,
                 checkAllWeekday:'',
                 selectedDays:[],
-                weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday'],
+                weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                 entryPeriodOptions: {
                     total: 'Total Entries',
                     day: 'Per Day',

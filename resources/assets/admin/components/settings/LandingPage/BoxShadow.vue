@@ -69,7 +69,7 @@
                                 {{$t('Position')}}
                             </label>
                             <div class="ff-type-value">
-                                <el-select size="mini" v-model="valueItem.position" placeholder="Select">
+                                <el-select size="mini" v-model="valueItem.position" :placeholder="$t('Select')">
                                     <el-option
                                         v-for="(item, key) in {'': 'Outline','inset': 'Inset'}"
                                         :key="key"

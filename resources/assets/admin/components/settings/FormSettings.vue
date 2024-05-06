@@ -166,6 +166,124 @@
                     </card-body>
                 </card>
 
+                <!--Admin approval settings-->
+                <card v-if="admin_approval" id="admin_approval">
+                    <card-head>
+                        <h5 class="title">{{ $t('Admin approval') }}</h5>
+                        <p class="text">
+                            {{ $t('Enable admin approval email notifications to inform the admin of pending submissions from') }} <a href="?page=fluent_forms_settings#admin_approval">{{ $t('Global Settings') }}</a>. {{$t('After approve form data & email notification will be processed.You can configure an email for users declined submissions.') }}</p>
+                    </card-head>
+                    <card-body>
+
+                        <el-form label-position="top">
+                            <el-row :gutter="24">
+                                <el-col>
+                                    <el-checkbox true-label="yes" false-label="no"  v-model="admin_approval.status">
+                                        {{ $t('Enable Admin approval before Form Data Processing')}}
+                                    </el-checkbox>
+                                </el-col>
+                                <el-col v-if="admin_approval.status =='yes'">
+                                    <el-form-item class="ff-form-item">
+                                        <template slot="label">
+                                            {{ $t('Approval Pending Message') }}
+                                            <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
+                                                <div slot="content">
+                                                    <p>{{ $t('Enter the text you would like the user to see just after the form submission.')}}</p>
+                                                </div>
+                                                <i class="ff-icon ff-icon-info-filled text-primary"/>
+                                            </el-tooltip>
+                                        </template>
+                                        <wp-editor
+                                                :height="75"
+                                                :editor-shortcodes="editorShortcodes"
+                                                v-model="admin_approval.approval_pending_message"/>
+
+                                    </el-form-item>
+                                    <!--Admin declined Email Notification to user-->
+                                    <el-form-item class="ff-form-item">
+                                        <template slot="label">
+                                            {{ $t('Declined Submission Notification') }}
+                                            <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
+                                                <div slot="content">
+                                                    <p>
+                                                        {{ $t('Select the primary email field from the form fields. In the selected email field, the double optin email will be sent for verification.')}}
+                                                    </p>
+                                                </div>
+
+                                                <i class="ff-icon ff-icon-info-filled text-primary"/>
+                                            </el-tooltip>
+                                        </template>
+
+                                        <el-select class="ff_input_width" clearable v-model="admin_approval.email_field" :placeholder="$t('Select an email field')">
+                                            <el-option
+                                                    v-for="(item, index) in emailFields"
+                                                    :key="index"
+                                                    :label="item.admin_label"
+                                                    :value="item.attributes.name">
+                                            </el-option>
+                                        </el-select>
+
+                                    </el-form-item>
+
+                                    <template v-if="admin_approval.email_field">
+                                        <el-form-item class="ff-form-item">
+                                            <template slot="label">
+                                                {{ $t('Declined Email Subject') }}
+                                                <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
+                                                    <div slot="content">
+                                                        <p>
+                                                            {{ $t('Email Subject for declined submission notification. You can use any smart code in the email subject') }}
+                                                        </p>
+                                                    </div>
+
+                                                    <i class="ff-icon ff-icon-info-filled text-primary"/>
+                                                </el-tooltip>
+                                            </template>
+                                            <el-input :placeholder="$t('Email Subject')" v-model="admin_approval.email_subject"/>
+                                        </el-form-item>
+                                        <el-form-item class="ff-form-item">
+                                            <template slot="label">
+                                                {{ $t('Declined Email Body') }}
+                                                <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
+                                                    <div slot="content">
+                                                        <p>
+                                                            {{ $t('Enter the content you would like the user to send via email for notification of declined submission.')}}
+                                                        </p>
+                                                    </div>
+
+                                                    <i class="ff-icon ff-icon-info-filled text-primary"/>
+                                                </el-tooltip>
+                                            </template>
+                                            <input-popover
+                                                    :rows="10"
+                                                    v-if="admin_approval.asPlainText == 'yes'" fieldType="textarea"
+                                                    v-model="admin_approval.email_body"
+                                                    :placeholder="$t('Admin Approval declined Email Body HTML')"
+                                                    :data="editorShortcodes"
+                                            ></input-popover>
+                                            <wp-editor v-else :height="150" :editor-shortcodes="editorShortcodes"
+                                                       v-model="admin_approval.email_body"/>
+                                            <el-checkbox class="mt-3" true-label="yes" false-label="no" v-model="admin_approval.asPlainText">
+                                                {{ $t('Send Email as RAW HTML Format') }}
+                                            </el-checkbox>
+
+                                            <p class="mt-2 fs-14">{{ $t('Use #confirmation_url# smartcode for double optin confirmation URL') }}</p>
+                                        </el-form-item>
+
+
+                                    </template>
+                                    <div class="form_item">
+                                        <el-checkbox true-label="yes" false-label="no" v-model="admin_approval.skip_if_logged_in">
+                                            {{ $t('Disable Admin Approval for Logged in users') }}
+                                        </el-checkbox>
+                                    </div>
+                                </el-col>
+
+                            </el-row>
+                        </el-form>
+                    </card-body>
+                </card>
+
                 <!-- Appearance Settings -->
                 <card id="form-layout">
                     <card-head>
@@ -227,7 +345,7 @@
                                         <el-select class="w-100 ff-input-s1" v-model="formSettings.layout.helpMessagePlacement">
                                             <el-option
                                                 v-for="(label, value) in helpMessagePlacementOptions"
-                                                :label="label"
+                                                :label="$t(label)"
                                                 :key="value"
                                                 :value="value"
                                             >
@@ -255,7 +373,7 @@
                                         <el-select class="w-100 ff-input-s1" v-model="formSettings.layout.errorMessagePlacement">
                                             <el-option
                                                 v-for="(label, value) in errorMessagesPlacement"
-                                                :label="label"
+                                                :label="$t(label)"
                                                 :key="value"
                                                 :value="value"
                                             >
@@ -283,7 +401,7 @@
                                         <el-select class="w-100 ff-input-s1" v-model="formSettings.layout.asteriskPlacement">
                                             <el-option
                                                 v-for="(label, value) in asteriskPlacementMock"
-                                                :label="label"
+                                                :label="$t(label)"
                                                 :key="value"
                                                 :value="value"
                                             >
@@ -508,6 +626,54 @@
                     </card-body>
                 </card>
 
+                <!-- per step save data for conversation form -->
+                <card v-if="is_conversion_form && hasConvFormSaveAndResume" id="conv_form_per_step_save">
+                    <card-head>
+                        <card-head-group>
+                            <h5 class="title">{{ $t('Conversational Form Per Step Save') }}</h5>
+                            <el-tooltip class="item" placement="bottom-start" popper-class="ff_tooltip_wrap">
+                                <div slot="content">
+                                    <p>
+                                        {{ $t('If you enable this setting than this conversational form per step data will be saved') }}
+                                    </p>
+                                </div>
+                                <i class="ff-icon ff-icon-info-filled text-primary ml-1"></i>
+                            </el-tooltip>
+                        </card-head-group>
+                    </card-head>
+                    <card-body class="el-form--label-top">
+                        <div v-if="hasPro">
+                            <div class="el-form-item ff-form-item ff-form-item-flex">
+                                <label class="el-form-item__label" style="width: 390px;">
+                                    {{ $t('Enable per step save') }}
+                                </label>
+                                <div class="el-form-item__content">
+                                    <el-switch class="el-switch-lg" v-model="formSettings.conv_form_per_step_save" v-if="hasPro"/>
+                                </div>
+                            </div>
+                            <transition name="slide-down">
+                                <div v-if="formSettings.conv_form_per_step_save" class="el-form-item ff-form-item ff-form-item-flex">
+                                    <label class="el-form-item__label" style="width: 390px;">
+                                        {{ $t('Resume from last step') }}
+                                    </label>
+                                    <div class="el-form-item__content">
+                                        <el-switch class="el-switch-lg" v-model="formSettings.conv_form_resume_from_last_step" v-if="hasPro"/>
+                                    </div>
+                                </div>
+                            </transition>
+                        </div>
+                        <notice class="ff_alert_between" type="danger-soft" v-else>
+                            <div>
+                                <h6 class="title">{{$t('Conversation Form Per Step Save is available in the pro version')}}</h6>
+                                <p class="text">{{$t('Upgrade to get access to all the advanced features.')}}</p>
+                            </div>
+                            <a target="_blank" href="https://fluentforms.com/pricing/?utm_source=plugin&amp;utm_medium=wp_install&amp;utm_campaign=ff_upgrade&amp;theme_style=twentytwentythree" class="el-button el-button--danger el-button--small">
+                                {{$t('Upgrade to Pro')}}
+                            </a>
+                        </notice>
+                    </card-body>
+                </card>
+
                 <div>
                     <el-button
                         :loading="loading"
@@ -618,6 +784,11 @@
                 hasFluentCRM: !!window.FluentFormApp.hasFluentCRM,
                 double_optin: false,
                 affiliate_wp: false,
+                admin_approval : false,
+                is_conversion_form: !!window.FluentFormApp.is_conversion_form,
+                conv_form_per_step_save: false,
+                conv_form_resume_from_last_step: false,
+                hasConvFormSaveAndResume: !!window.FluentFormApp.has_conv_form_save_and_resume
             }
         },
         computed: {
@@ -733,6 +904,7 @@
                         this.advancedValidationSettings = response.advancedValidationSettings;
 
                         this.double_optin = response.double_optin;
+                        this.admin_approval = response.admin_approval;
                         this.affiliate_wp = response.affiliate_wp;
 
                     })
@@ -762,9 +934,9 @@
                     formSettings: JSON.stringify(this.formSettings),
                     advancedValidationSettings: JSON.stringify(this.advancedValidationSettings),
                     double_optin: JSON.stringify(this.double_optin),
+                    admin_approval: JSON.stringify(this.admin_approval),
                     affiliate_wp: JSON.stringify(this.affiliate_wp),
                 }
-
                 FluentFormsGlobal.$post(data)
                     .then(response => {
                         this.$success(response.message);

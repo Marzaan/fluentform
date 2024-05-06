@@ -84,7 +84,9 @@ class Component
         if (!wp_script_is('flatpickr', 'registered')) {
             wp_register_style(
                 'flatpickr',
-                fluentFormMix('libs/flatpickr/flatpickr.min.css')
+                fluentFormMix('libs/flatpickr/flatpickr.min.css'),
+                [],
+                '4.6.9'
             );
         }
         // Date Pickckr Script
@@ -92,7 +94,7 @@ class Component
             'flatpickr',
             fluentFormMix('libs/flatpickr/flatpickr.min.js'),
             ['jquery'],
-            false,
+            '4.6.9',
             true
         );
 

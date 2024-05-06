@@ -20,7 +20,7 @@ class Route {
     getForms = "forms";
     storeForms = this.getForms;
     getTemplates = this.getForms + "/templates";
-    
+
 
     findForm = this.getForms + "/{param}";
     updateForm = this.findForm;
@@ -37,6 +37,9 @@ class Route {
     storeFormSettings = this.getFormSettings;
     deleteFormSettings = this.getFormSettings;
 
+    getPresetSettings = this.getFormSettings + "/preset";
+    savePresetSettings = this.getFormSettings + "/save-preset";
+
     getGeneralFormSettings = this.getFormSettings + "/general";
     storeGeneralFormSettings = this.getGeneralFormSettings;
 
@@ -51,12 +54,12 @@ class Route {
     getSubmissionsResources = this.getSubmissions + '/resources';
     handleSubmissionsBulkActions = this.getSubmissions + '/bulk-actions';
     getAllSubmissions = this.getSubmissions + '/all';
-    
+
     findSubmission = this.getSubmissions + '/{param}'; // not implemented
     deleteSubmission = this.findSubmission;
     updateSubmissionStatus = this.findSubmission + '/status';
     toggleSubmissionIsFavorite = this.findSubmission + '/is-favorite';
-    
+
     getSubmissionLogs = this.findSubmission + '/logs';
     deleteSubmissionLogs = this.findSubmission + '/logs';
 
@@ -99,6 +102,11 @@ class Route {
     formsReport = this.report + '/forms'
     formReport = this.formsReport + '/{param}'
     submissionsReport = this.report + '/submissions';
+
+    //pro routes
+    inventory ='inventory';
+    getInventoryList = this.inventory ;
+    storeInventory = this.inventory ;
 
     noticeAction = 'notice';
 

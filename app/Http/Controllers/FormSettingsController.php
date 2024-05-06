@@ -115,4 +115,26 @@ class FormSettingsController extends Controller
             ], 423);
         }
     }
+
+    public function getPreset(SettingsService $settingsService, $formId)
+    {
+        try {
+            return $this->sendSuccess($settingsService->getPreset($formId));
+        } catch (Exception $e) {
+            return $this->sendError([
+                'message' => $e->getMessage(),
+            ], 423);
+        }
+    }
+
+    public function savePreset(SettingsService $settingsService)
+    {
+        try {
+            return $this->sendSuccess($settingsService->savePreset($this->request->all()));
+        } catch (Exception $e) {
+            return $this->sendError([
+                'message' => $e->getMessage(),
+            ], 423);
+        }
+    }
 }

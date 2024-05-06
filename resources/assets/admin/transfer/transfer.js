@@ -9,6 +9,10 @@ import {
     Col,
     Select,
     Option,
+    Checkbox,
+    Radio,
+    RadioGroup,
+    Dialog,
     Table,
     TableColumn,
     Pagination,
@@ -33,6 +37,10 @@ Vue.use(Row);
 Vue.use(Col);
 Vue.use(Select);
 Vue.use(Option);
+Vue.use(RadioGroup);
+Vue.use(Radio);
+Vue.use(Checkbox);
+Vue.use(Dialog);
 Vue.use(Pagination);
 Vue.use(Popover);
 Vue.use(Tabs);
@@ -58,6 +66,7 @@ import ActivityLogs from './ActivityLogs';
 import ApiLogs from './ApiLogs';
 import Migrator from './Migrator';
 import globalSearch from '../global_search';
+import ImportEntries from './ImportEntries';
 
 Vue.mixin({
     methods:{
@@ -77,6 +86,7 @@ new Vue({
         globalSearch,
         exportforms: ExportForms,
         importforms: ImportForms,
+        importentries: ImportEntries,
         activitylogs: ActivityLogs,
         apilogs: ApiLogs,
         migrator: Migrator

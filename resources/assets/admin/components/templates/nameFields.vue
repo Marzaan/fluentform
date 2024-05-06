@@ -4,7 +4,7 @@
 
     <el-row :gutter="30">
         <template v-for="(field, key) in item.fields">
-            <el-col :key="key" :md="24 / columns" v-if="field.settings.visible" :class="'ff-el-form-'+item.settings.label_placement" class="address-field-wrapper">
+            <el-col :key="key" :md="is_conversion_form ? 24 : 24 / columns" v-if="field.settings.visible" :class="'ff-el-form-'+item.settings.label_placement" class="address-field-wrapper">
                 <component :is="guessElTemplate(field)" :item="field"></component>
             </el-col>
         </template>

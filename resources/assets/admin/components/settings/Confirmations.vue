@@ -41,12 +41,12 @@
                                         </template>
                                     </el-table-column>
 
-                                    <el-table-column prop="name" label="Name" width="180" class-name="content-ellipsis"></el-table-column>
+                                    <el-table-column prop="name" :label="$t('Name')" width="180" class-name="content-ellipsis"></el-table-column>
 
                                     <el-table-column :label="$t('Content')" class-name="content-ellipsis">
                                         <template slot-scope="scope">
                                             <template v-if="scope.row.redirectTo === 'samePage'">
-                                                <span v-html="scope.row.messageToShow"></span>
+                                                <span v-html="$t(scope.row.messageToShow)"></span>
                                             </template>
 
                                             <template v-else-if="scope.row.redirectTo === 'customUrl'">
@@ -146,11 +146,11 @@
 
                     <notice v-else type="danger-soft" class="ff_alert_between">
                         <div>
-                            <h6 class="title">You are using the free version of Fluent Forms.</h6>
-                            <p class="text">Upgrade to get access to all the advanced features.</p>
+                            <h6 class="title">{{ $t('You are using the free version of Fluent Forms.') }}</h6>
+                            <p class="text">{{ $t('Upgrade to get access to all the advanced features.') }}</p>
                         </div>
                         <a target="_blank" href="https://fluentforms.com/pricing/?utm_source=plugin&amp;utm_medium=wp_install&amp;utm_campaign=ff_upgrade&amp;theme_style=twentytwentythree" class="el-button el-button--danger el-button--small">
-                            Upgrade to Pro
+                            {{ $t('Upgrade to Pro') }}
                         </a>
                     </notice>
                 </card-body>
